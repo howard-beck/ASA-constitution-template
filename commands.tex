@@ -1,0 +1,187 @@
+\usepackage[margin=1in]{geometry}
+\setlength{\headheight}{15pt}
+
+\let\oldtitle\title
+\renewcommand{\title}[1]{\oldtitle{\textsc{#1}}}
+
+\setlength{\parindent}{0cm}
+
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+\usepackage{xcolor}
+
+\definecolor{linkblue}{rgb}{0.0, 0.53, 0.74}
+\definecolor{urlred}{HTML}{FF1423}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks = true,
+    urlcolor = urlred,
+    linkcolor = linkblue
+}
+
+\usepackage{cleveref}
+\usepackage[none]{hyphenat}
+
+\fancypagestyle{firststyle}
+{
+   \fancyhf{}
+   \fancyfoot[R]{Page \thepage\ of \pageref*{LastPage}}
+   \renewcommand{\headrulewidth}{0pt} % removes horizontal header line
+}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\textsc{\groupname}}
+\fancyfoot[R]{Page \thepage\ of \pageref*{LastPage}}
+
+
+
+%\setcounter{secnumdepth}{0}
+\usepackage{xparse}
+\def\nextsecdepth{section}
+
+\makeatletter
+\newcounter{labelcount}
+\NewDocumentCommand{\nsection}{m m m m m m m O{} O{}}{
+    % section counter: #1
+    % old section command: #2
+    % section pre: #3
+    % section ref: #4
+    % next step name: #5
+    % margin label: #6
+    % total label: #7
+    % optional: #8
+    % header decoration: #9
+    
+    \ExpandArgs{c}\RenewDocumentCommand{#1}{s m}{%
+        \IfBooleanTF{##1}
+        {
+            #2*{##2}
+        }
+        {%
+            #8%
+            \stepcounter{#1}
+            \def\secttext{#3. ##2}%
+            %
+            \def\@currentlabel{\protect{#7}}%
+            \phantomsection
+            #2*{%
+% ignore error on this line, it doesn't exist
+                \hyperref[#4]{#9{\textsc{\secttext}}}
+                \reversemarginpar\marginpar[%
+                    \begin{spacing}{1}%
+                        \scriptsize #6%
+                    \end{spacing}%
+                ]{}%
+            }%
+            \addcontentsline{toc}{#1}{\secttext}%
+            %
+            \def\nextsecdepth{#5}%
+            \label{#4}%
+        }
+    }
+}
+\makeatother
+
+\usepackage{titlesec}
+\titlespacing{\section}{0pt}{\parskip}{-\parskip}
+\titlespacing{\subsection}{0pt}{\parskip}{-\parskip}
+\titlespacing{\subsubsection}{0pt}{\parskip}{-\parskip}
+
+\let\artnum\Roman
+\let\secnum\arabic
+\let\subsecnum\arabic
+
+\NewCommandCopy{\oldsection}{\section}
+\nsection{section}{\oldsection}{Article \artnum{section}}{art.\artnum{section}}{subsection}{ART.\artnum{section}}{Article \artnum{section}}[\vspace{1cm}\hrule][\underline]
+
+
+\counterwithout{subsection}{section}
+\counterwithin*{subsection}{section}
+\NewCommandCopy{\oldsubsection}{\subsection}
+\nsection{subsection}{\oldsubsection}{Section \secnum{subsection}}{art.\artnum{section}.sec.\secnum{subsection}}{subsubsection}{ART.\artnum{section} \\ SEC.\secnum{subsection}}{Article \artnum{section}, Section \secnum{subsection}}[\vspace{0.5cm}]
+
+\counterwithout{subsubsection}{subsection}
+\counterwithin*{subsubsection}{subsection}
+\NewCommandCopy{\oldsubsubsection}{\subsubsection}
+\nsection{subsubsection}{\oldsubsubsection}{Subsection \subsecnum{subsubsection}}{art.\artnum{section}.sec.\secnum{subsection}.sub.\subsecnum{subsubsection}}{subsubsection}{ART.\artnum{section} \\ SEC.\secnum{subsection} \\ SUB.\subsecnum{subsubsection}}{Article \artnum{section}, Section \secnum{subsection}, Subsection \subsecnum{subsubsection}}
+[\vspace{0.25cm}]
+
+
+
+\renewcommand{\labelenumii}{\alph{enumii}.}
+
+\newcommand{\officer}[1]{%
+    \addcontentsline{toc}{\nextsecdepth}{#1}%
+    \hyperref[officer:#1]{\textbf{#1}}%
+    \label{officer:#1}%
+}
+
+
+\usepackage{setspace}
+%\singlespacing
+\linespread{1.25}
+
+\usepackage[shortlabels]{enumitem}
+\setlist[itemize]{noitemsep, nolistsep}
+\setlist[enumerate]{noitemsep, nolistsep}
+
+\usepackage{xspace}
+
+\tolerance=1
+\emergencystretch=\maxdimen
+\hyphenpenalty=10000
+\hbadness=10000
+
+\usepackage[titles]{tocloft}
+\setlength{\cftbeforesecskip}{0pt}
+
+\let\oldmaketitle\maketitle
+\renewcommand{\maketitle}{
+    \oldmaketitle
+    \thispagestyle{firststyle}
+    \hrule
+    \begin{spacing}{1}
+        \tableofcontents
+    \end{spacing}
+}
+
+\let\oldauthor\author
+\renewcommand{\author}[1]{
+    \oldauthor{%
+        \parbox{\linewidth}{%
+            \centering
+            \begin{spacing}{1}
+                #1
+            \end{spacing}
+        }
+    }
+}
+
+\let\olddate\date
+\renewcommand{\date}[1]{
+    \olddate{%
+        \parbox{\linewidth}{%
+            \centering
+            \begin{spacing}{1}
+                #1
+            \end{spacing}
+        }
+    }
+}
+
+\let\oldlabel\label
+\renewcommand{\label}[1]{
+    %\expandafter\let\csname label#1\endcsname\currentlabel
+    \oldlabel{#1}
+}
+
+\newcommand{\sectref}[1]{%
+    %\csname label#1\endcsname
+    \labeli
+}
+
+
+\newcommand{\moiralist}[1]{\href{https://groups.mit.edu/webmoira/list/#1}{#1@mit.edu}}
+\newcommand{\mailmanlist}[1]{\href{https://mailman.mit.edu:444/mailman/admin/#1}{#1@mit.edu}}
+\newcommand{\mailto}[1]{\href{mailto:#1}{#1}}

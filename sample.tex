@@ -1,0 +1,193 @@
+\documentclass[12pt]{article}
+
+
+%%% NOTE: the following code puts the document in
+%   Times New Roman. If you want to keep it, please
+%   switch your compiler to XeTeX.
+%   If you are on Overleaf, see:
+%   https://www.overleaf.com/learn/how-to/Changing_compiler
+
+\usepackage{fontspec}
+% Gyre Termes is TeX's copy of Times New Roman
+% We don't use Times New Roman (also available)
+% as it doesn't support script fonts
+\setmainfont{TeX Gyre Termes}
+
+\input{commands.tex}
+
+%%% NOTE: Here you can change the section numbering
+%   scheme. The following are the defaults which
+%   you can edit by uncommenting. see:
+%   https://www.overleaf.com/learn/latex/Counters#Accessing_and_printing_counter_values
+
+%\let\artnum\Roman
+%\let\secnum\arabic
+%\let\subsecnum\arabic
+
+%%% NOTE: do not remove \xspace
+\def\groupname{[Group Name]\xspace}
+\begin{document}
+\title{\groupname Constitution}
+%%% OPTIONAL:
+\author{%
+    Membership list: \moiralist{your-club-list} \\
+    Exec list: \mailto{your-club-exec@mit.edu} \\
+    Website: \url{https://your-club.mit.edu/}
+}
+\date{\textit{Last updated}: \today}
+
+\maketitle
+
+
+%%% REQUIREMENTS: https://asa.mit.edu/start-group/constitution-requirements
+
+
+\section{Purpose}
+%%% REQUIRED: The purpose of your organization
+The purpose of the \groupname is...
+
+\section{Membership}
+\begin{enumerate}
+    %%% REQUIRED: Any member of the MIT student community must be eligible for membership
+    \item Any member of the MIT community is eligible to become a member of this organization.
+    One is considered a member of this organization in any given academic term if they have attended at least one club activity and one meeting in the preceding or current term.
+
+    %%% REQUIRED: The organization's membership will at all times consist of at least 5 MIT students and be more than half MIT students.
+    \item The organization’s membership will at all times consist of at least 5 MIT students and be more than half MIT students.
+
+    %%% optional
+    \item If this organization charges any monetary dues, there will be exceptions made for students that cannot afford these dues.
+\end{enumerate}
+
+\subsection{MIT Nondiscrimination Policy}
+%%% REQUIRED
+The organization shall not discriminate based on any characteristic listed in the \href{https://policies.mit.edu/policies-procedures/90-relations-and-responsibilities-within-mit-community/93-nondiscrimination}{MIT~Nondiscrimination~Policy} for membership, officer position, or in any other aspect.
+
+\subsection{Membership Removal}
+%%% REQUIRED: A clause for membership removal (new requirement)
+A member can be removed by a two-third vote by all the other members.
+The member to be removed will be given the opportunity to speak at the meeting at which the vote takes place.
+
+\section{Officers}
+\begin{enumerate}
+    %%% REQUIRED: Must include at least president and treasurer (or corresponding positions) and those two positions must be required to be distinct current MIT students
+    \item This organization will have at a minimum two officers. The president and the treasurer will be distinct current MIT students.
+    \begin{enumerate}
+        %%% REQUIRED: a president
+        \item \officer{President}
+        \begin{enumerate}
+            \item The president shall be a currently enrolled MIT student.
+            
+            \item The president shall be the official representative of the group to any other organization and to MIT.
+            
+            \item The president will preside over all meetings.
+            
+            \item The president is responsible for determining when meetings are and publicizing this to the group.
+        \end{enumerate}
+
+        %%% REQUIRED: a treasurer
+        \item \officer{Treasurer}
+        \begin{enumerate}
+            \item The treasurer shall be a currently enrolled MIT student.
+            
+            \item The treasurer shall be responsible for the finances of the group.
+            
+            \item The treasurer must approve all disbursements from the group’s accounts, including reimbursements to members.
+        \end{enumerate}
+    \end{enumerate}
+
+    %%% REQUIRED: The executive board must be comprised of at least half current MIT students
+    \item At least half of the individuals who are officers of this organization must be current MIT students.
+\end{enumerate}
+
+\subsection{Elections}
+%%% REQUIRED: Officer election procedure and dates (including what makes a quorum)
+\begin{enumerate}
+    %%% Required: Officer election procedure and dates (including what makes a quorum)
+    \item Any member of this organization is eligible to run for any office.
+    \item Quorum for elections is two-thirds of the group.
+    \item Any member is elected if they win a majority of the voting members.
+    \item If more than two people are running and no one wins a majority, then the person with the fewest votes is dropped from the ballot and votes are recast.
+    
+    %%% REQUIRED: Explicit terms of office of your group's officers that encompass every day of the year
+    \item Elections of officers shall occur [when].
+
+    %%% REQUIRED: Explicit terms of office of your group's officers that encompass every day of the year
+    \item The term of office runs from one election to the subsequent election.
+\end{enumerate}
+
+\subsection{Removal}
+%%% REQUIRED: Removal process for officers
+Officers may be removed by a two-thirds vote of the members.
+
+\section{Meetings}
+\begin{enumerate}
+    %%% REQUIRED: The frequency of meetings
+    \item Meetings shall be held at least every [time period].
+
+    %%% REQUIRED: Who runs the meetings
+    \item Meetings shall be presided over by the president, unless they are absent, and in that case the treasurer shall preside.
+
+    %%% REQUIRED: How decisions are made during a meeting (including what makes a quorum)
+    \item All decisions shall be made by a majority vote of all members present.
+    \item Quorum for a meeting shall be one-quarter of the members of the organization.
+\end{enumerate}
+
+\section{Amendments}
+\begin{enumerate}
+    %%% REQUIRED: How the amendment is presented
+    \item Amendments shall be presented by any member of the organization.
+
+    %%% REQUIRED: How the amendment is passed
+    \item Amendments shall be passed by a two-thirds voted of the members present.
+
+    %%% REQUIRED: The quorum necessary for an amendment to be passed
+    \item Quorum for amending this constitution shall be two-thirds of all members of the organization.
+\end{enumerate}
+
+\section{ASA Governance Clause}
+%%% REQUIRED: The [your group name] agrees to abide by the rules and regulations of the Association of Student Activities, and its executive board. This constitution, amendments to it, and the by-laws of this organization shall be subject to review by the ASA Executive Board to ensure that they are in accordance with the aforementioned rules and regulations.
+The \groupname agrees to abide by the \href{https://asa.mit.edu/asa-policies}{rules~and~regulations} of the \href{https://asa.mit.edu/}{Association~of~Student~Activities}, and its \href{https://asa.mit.edu/about-asa/board-members}{executive~board}.
+This constitution, amendments to it, and the by-laws of this organization shall be subject to review by the ASA Executive Board to ensure that they are in accordance with the aforementioned rules and regulations.
+
+%%% OPTIONAL, feel free to remove
+\section{Resources}
+\subsection{ASA Operating Guidelines}
+\url{https://asa.mit.edu/asa-policies/asa-guidelines-and-bylaws}
+
+\subsection{Massachusetts Hazing Law}
+\href{https://malegislature.gov/Laws/GeneralLaws/PartIV/TitleI/Chapter269}{269}:\href{https://malegislature.gov/Laws/GeneralLaws/PartIV/TitleI/Chapter269/Section17}{17},\href{https://malegislature.gov/Laws/GeneralLaws/PartIV/TitleI/Chapter269/Section18}{18},\href{https://malegislature.gov/Laws/GeneralLaws/PartIV/TitleI/Chapter269/Section19}{19}
+
+\subsection{SOLE Student Organization Handbook}
+\url{https://studentlife.mit.edu/system/files/2024-02/20240220-sole-handbook_2.pdf}
+
+\section{TeX help -- remove me}
+\subsection{Sectioning commands}
+\verb|\section| has been repurposed to mean ``Article."
+\\
+\\
+(Hopefully not too confusingly), \verb|\subsection| has been repurposed to mean ``Section," and \verb|\subsubsection| means ``Subsection."
+\\
+\\
+All sectioning commands have been modified to be clickable.
+\ref{justification}
+
+\subsubsection{Justification}
+\label{justification}
+The motivation for this change is to make it more intuitive to type the document, as you would use sectioning commands as usual.
+Another reason is that the Overleaf interface displays a file outline based on \verb|\section| and its relatives, so electing to createan \verb|\article| command and not touching \verb|\section| and \verb|\subsection| means the outline would not display.
+
+\subsection{File System}
+\verb|commands.tex| contains all the custom and redefined commands, along with almost all the package imports -- so as to not clutter this file.
+\\\\
+\verb|latexmkrc| contains information that tells the compiler to use Eastern time in determining the date.
+\\\\
+\verb|main.tex| is what you think it is.
+
+\subsection{Referencing}
+You can reference other sections with \verb|\ref| as usual.
+It has been redefined to automatically display the full name of the section.
+\\\\
+For example, take a look at \ref{justification}.
+
+\end{document}
