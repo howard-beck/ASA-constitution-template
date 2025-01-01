@@ -42,11 +42,11 @@
 %%% REQUIREMENTS: https://asa.mit.edu/start-group/constitution-requirements
 
 
-\section{Purpose}
+\article{Purpose}
 %%% REQUIRED: The purpose of your organization
 The purpose of the \groupname is...
 
-\section{Membership}
+\article{Membership}
 \begin{enumerate}
     %%% REQUIRED: Any member of the MIT student community must be eligible for membership
     \item Any member of the MIT community is eligible to become a member of this organization.
@@ -59,16 +59,16 @@ The purpose of the \groupname is...
     \item If this organization charges any monetary dues, there will be exceptions made for students that cannot afford these dues.
 \end{enumerate}
 
-\subsection{MIT Nondiscrimination Policy}
+\section{MIT Nondiscrimination Policy}
 %%% REQUIRED
-The organization shall not discriminate based on any characteristic listed in the \href{https://policies.mit.edu/policies-procedures/90-relations-and-responsibilities-within-mit-community/93-nondiscrimination}{MIT~Nondiscrimination~Policy} for membership, officer position, or in any other aspect.
+The organization shall not discriminate based on any characteristic listed in the \href{https://handbook.mit.edu/nondiscrimination}{MIT~Nondiscrimination~Policy} for membership, officer position, or in any other aspect.
 
-\subsection{Membership Removal}
+\section{Membership Removal}
 %%% REQUIRED: A clause for membership removal (new requirement)
 A member can be removed by a two-third vote by all the other members.
 The member to be removed will be given the opportunity to speak at the meeting at which the vote takes place.
 
-\section{Officers}
+\article{Officers}
 \begin{enumerate}
     %%% REQUIRED: Must include at least president and treasurer (or corresponding positions) and those two positions must be required to be distinct current MIT students
     \item This organization will have at a minimum two officers. The president and the treasurer will be distinct current MIT students.
@@ -100,7 +100,7 @@ The member to be removed will be given the opportunity to speak at the meeting a
     \item At least half of the individuals who are officers of this organization must be current MIT students.
 \end{enumerate}
 
-\subsection{Elections}
+\section{Elections}
 %%% REQUIRED: Officer election procedure and dates (including what makes a quorum)
 \begin{enumerate}
     %%% Required: Officer election procedure and dates (including what makes a quorum)
@@ -116,11 +116,11 @@ The member to be removed will be given the opportunity to speak at the meeting a
     \item The term of office runs from one election to the subsequent election.
 \end{enumerate}
 
-\subsection{Removal}
+\section{Removal}
 %%% REQUIRED: Removal process for officers
 Officers may be removed by a two-thirds vote of the members.
 
-\section{Meetings}
+\article{Meetings}
 \begin{enumerate}
     %%% REQUIRED: The frequency of meetings
     \item Meetings shall be held at least every [time period].
@@ -133,7 +133,7 @@ Officers may be removed by a two-thirds vote of the members.
     \item Quorum for a meeting shall be one-quarter of the members of the organization.
 \end{enumerate}
 
-\section{Amendments}
+\article{Amendments}
 \begin{enumerate}
     %%% REQUIRED: How the amendment is presented
     \item Amendments shall be presented by any member of the organization.
@@ -145,24 +145,24 @@ Officers may be removed by a two-thirds vote of the members.
     \item Quorum for amending this constitution shall be two-thirds of all members of the organization.
 \end{enumerate}
 
-\section{ASA Governance Clause}
+\article{ASA Governance Clause}
 %%% REQUIRED: The [your group name] agrees to abide by the rules and regulations of the Association of Student Activities, and its executive board. This constitution, amendments to it, and the by-laws of this organization shall be subject to review by the ASA Executive Board to ensure that they are in accordance with the aforementioned rules and regulations.
 The \groupname agrees to abide by the \href{https://asa.mit.edu/asa-policies}{rules~and~regulations} of the \href{https://asa.mit.edu/}{Association~of~Student~Activities}, and its \href{https://asa.mit.edu/about-asa/board-members}{executive~board}.
 This constitution, amendments to it, and the by-laws of this organization shall be subject to review by the ASA Executive Board to ensure that they are in accordance with the aforementioned rules and regulations.
 
 %%% OPTIONAL, feel free to remove
-\section{Resources}
-\subsection{ASA Operating Guidelines}
+\article{Resources}
+\section{ASA Operating Guidelines}
 \url{https://asa.mit.edu/asa-policies/asa-guidelines-and-bylaws}
 
-\subsection{Massachusetts Hazing Law}
+\section{Massachusetts Hazing Law}
 \href{https://malegislature.gov/Laws/GeneralLaws/PartIV/TitleI/Chapter269}{269}:\href{https://malegislature.gov/Laws/GeneralLaws/PartIV/TitleI/Chapter269/Section17}{17},\href{https://malegislature.gov/Laws/GeneralLaws/PartIV/TitleI/Chapter269/Section18}{18},\href{https://malegislature.gov/Laws/GeneralLaws/PartIV/TitleI/Chapter269/Section19}{19}
 
-\subsection{SOLE Student Organization Handbook}
+\section{SOLE Student Organization Handbook}
 \url{https://studentlife.mit.edu/system/files/2024-02/20240220-sole-handbook_2.pdf}
 
-\section{TeX help -- remove me}
-\subsection{Sectioning commands}
+\article{TeX help -- remove me}
+\section{Sectioning commands}
 \verb|\section| has been repurposed to mean ``Article."
 \\
 \\
@@ -170,24 +170,59 @@ This constitution, amendments to it, and the by-laws of this organization shall 
 \\
 \\
 All sectioning commands have been modified to be clickable.
-\ref{justification}
+See \ref{justification}
 
-\subsubsection{Justification}
+\subsection{Justification}
 \label{justification}
 The motivation for this change is to make it more intuitive to type the document, as you would use sectioning commands as usual.
 Another reason is that the Overleaf interface displays a file outline based on \verb|\section| and its relatives, so electing to createan \verb|\article| command and not touching \verb|\section| and \verb|\subsection| means the outline would not display.
 
-\subsection{File System}
+\section{File System}
 \verb|commands.tex| contains all the custom and redefined commands, along with almost all the package imports -- so as to not clutter this file.
 \\\\
 \verb|latexmkrc| contains information that tells the compiler to use Eastern time in determining the date.
 \\\\
 \verb|main.tex| is what you think it is.
 
-\subsection{Referencing}
+\section{Referencing}
 You can reference other sections with \verb|\ref| as usual.
 It has been redefined to automatically display the full name of the section.
 \\\\
 For example, take a look at \ref{justification}.
+
+\section{Testing}
+\makearr{arrone}
+Hi, I am \arrone. My length is \getlen\arrone
+
+\makearr{arrtwo}
+Hello \arrone, I am \arrtwo.
+
+\setidx{\arrone}{0}{hi}
+I have value \getidx{\arrone}{0}
+\setidx{\arrone}{1}{bye}
+I have value \getidx{\arrone}{1}
+
+\addidx{\arrtwo}{heyyy}
+Two now has \getlen\arrtwo and \getidx\arrtwo0
+
+
+%\let\section\mysection
+\article{Testing}
+hi
+\section{Besting}
+a
+\section{Cesting}
+
+\article{Desting}
+\section{Eesting}
+
+\article{Festing}
+\section{Gesting}
+\subsection{Hesting}
+
+\appendix{Iesting}
+\article{Pesting}
+\section{Westing}
+
 
 \end{document}

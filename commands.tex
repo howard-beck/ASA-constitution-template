@@ -20,7 +20,7 @@
     linkcolor = linkblue
 }
 
-\usepackage{cleveref}
+%\usepackage{cleveref}
 \usepackage[none]{hyphenat}
 
 \fancypagestyle{firststyle}
@@ -35,6 +35,8 @@
 \fancyfoot[R]{Page \thepage\ of \pageref*{LastPage}}
 
 
+
+\let\OLDESTSECTION\section
 
 %\setcounter{secnumdepth}{0}
 \usepackage{xparse}
@@ -123,8 +125,8 @@
 \linespread{1.25}
 
 \usepackage[shortlabels]{enumitem}
-\setlist[itemize]{noitemsep, nolistsep}
-\setlist[enumerate]{noitemsep, nolistsep}
+\setlist[itemize]{noitemsep, nolistsep, leftmargin=*}
+\setlist[enumerate]{noitemsep, nolistsep, leftmargin=*}
 
 \usepackage{xspace}
 
@@ -136,6 +138,14 @@
 \usepackage[titles]{tocloft}
 \setlength{\cftbeforesecskip}{0pt}
 
+\let\OLDtableofcontents\tableofcontents
+\def\makingTOC{0}
+
+\renewcommand{\tableofcontents}{%
+    \def\makingTOC{1}%
+    \OLDtableofcontents
+}
+\renewcommand{\contentsname}{\hfill\bfseries\Large Contents\hfill}
 \let\oldmaketitle\maketitle
 \renewcommand{\maketitle}{
     \oldmaketitle
@@ -185,3 +195,268 @@
 \newcommand{\moiralist}[1]{\href{https://groups.mit.edu/webmoira/list/#1}{#1@mit.edu}}
 \newcommand{\mailmanlist}[1]{\href{https://mailman.mit.edu:444/mailman/admin/#1}{#1@mit.edu}}
 \newcommand{\mailto}[1]{\href{mailto:#1}{#1}}
+
+
+\newcounter{arrays}
+\setcounter{arrays}{1}
+
+\newcommand{\makearr}[1]{%
+    \newcounter{arrlen#1}%
+    %
+    \expandafter\edef\csname#1\endcsname{#1}%
+    \stepcounter{arrays}%
+}
+
+\newcommand{\getlen}[1]{%
+    \expandafter\csname thearrlen#1\endcsname%
+}
+\newcommand{\setidx}[3]{%
+    % array: #1
+    % idx: #2
+    % value: #3
+    %
+    \def\currentlimit{\the\numexpr\getlen{#1}\relax}%
+    \ifnum#2>\currentlimit%
+        \PackageError{commands}{Cannot set array index out of bounds}{}%
+    \else%
+        \expandafter\edef\csname arrval{#1}at{#2}\endcsname{#3}%
+        %
+        \ifnum#2=\currentlimit%
+            \stepcounter{arrlen#1}%
+        \fi%
+    \fi%
+}
+\newcommand{\addidx}[2]{%
+    \setidx{#1}{\getlen{#1}}{#2}%
+}
+\newcommand{\getidx}[2]{%
+    \expandafter\csname arrval{#1}at{#2}\endcsname%
+}
+
+\makearr{sectionnames}
+\makearr{sectionshorts}
+\makearr{sectionlongs}
+\makearr{sectionnumstyles}
+
+\newcommand{\getdepth}[1]{%
+    \expandafter\csname #1depth\endcsname%
+}
+\newcommand{\getindex}[1]{%
+    \expandafter\csname #1index\endcsname%
+}
+\NewDocumentCommand{\printarr}{m O{0} O{}}{
+    \ifnum#2>\getlen{#1}%
+        #3%
+    \else%
+        \edef\starttext{#1: }%
+        \ifstrempty{#3}{%
+        }{%
+            \edef\starttext{#3, }%
+        }%
+        \starttext\printarr{#1}[\the\numexpr1+#2\relax][idx #2: \getidx{#1}{#2}]
+        %\starttext idx #2: \getidx{#1}{#2}
+    \fi%
+}
+
+\makearr{SectToTheoDepth}
+\newcounter{sectiondepth}
+\setcounter{sectiondepth}{-1}
+
+\makearr{SectToSectType}
+\makearr{SectToSectNum}
+
+\newcommand{\sectnum}[1]{%
+    \expandafter\csname the#1count\endcsname
+}
+
+
+\NewDocumentCommand{\sectheadname}{O{0} O{} m}{%
+    % #3:
+    % 1 = full
+    % 2 = short
+    \ifnum#1>\thesectiondepth%
+        #2%
+    \else%
+        \edef\starttext{}%
+        \ifstrempty{#2}{%
+        }{%
+            \ifnum#3=1%
+                \edef\starttext{#2, }%
+            \else
+                \edef\starttext{#2\\}%
+            \fi%
+        }%
+        \edef\secttypeID{\getidx\SectToSectType{#1}}%
+        \edef\indexofsecttype{\getindex{\secttypeID}}%
+        \edef\numbr{\getidx\SectToSectNum{#1}}%
+        %
+        \let\seclist\sectionshorts%
+        \def\secspec{.}%
+        \ifnum#3=1%
+            \let\seclist\sectionlongs%
+            \def\secspec{ }%
+        \fi%
+        %
+        \edef\secttypename{\getidx\seclist{\indexofsecttype}}%
+        \starttext\sectheadname[\the\numexpr1+#1\relax][\secttypename\secspec\csname\secttypeID numstyle\endcsname {\secttypeID count}]{#3}%
+    \fi%
+}
+\NewDocumentCommand{\sectheadfullname}{O{0} O{}}{%
+    \sectheadname[#1][#2]{1}%
+}
+\NewDocumentCommand{\sectheadabbv}{O{0} O{}}{%
+    \sectheadname[#1][#2]{2}%
+}
+
+
+\newcounter{lastdepth}
+\setcounter{lastdepth}{-1}
+
+\edef\lastTheoDepth{-1}
+\usepackage{ifthen}
+
+\newcounter{headercounter}
+
+\usepackage{etoolbox}
+
+\makeatletter
+\NewDocumentCommand{\makesectioning}{ m m m m O{} }{
+    % name: 1
+    % short: 2
+    % full: 3
+    % number type: #4
+    % depth: #5
+    %
+    \edef\nextdepth{\the\numexpr1+\thelastdepth\relax}%
+    \ifstrempty{#5}{%
+    }{%
+        \edef\nextdepth{#5}%
+    }%
+    \expandafter\edef\csname #1depth\endcsname{\nextdepth}%
+    \setcounter{lastdepth}{\nextdepth}%
+    %
+    \expandafter\edef\csname #1index\endcsname{\getlen{\sectionnames}}%
+    %
+    \let\commandname\RenewDocumentCommand
+    \@ifundefined{#1}{
+        \let\commandname\NewDocumentCommand
+    }{}
+    %\let\commandname\ProvideDocumentCommand
+    \ExpandArgs{c}\commandname{#1}{s m}{%
+    \ifnum\makingTOC=1
+            \OLDESTSECTION*{##2}
+            \def\makingTOC{0}
+        \else
+        
+        \edef\TheoDepth{\getdepth{#1}}%
+        %
+        \ifnum\thesectiondepth>-1
+            \ifnum\TheoDepth>\the\numexpr1+\lastTheoDepth\relax
+                \PackageError{commands}{Cannot use #1, please use section headers sequentially}{}%
+            \fi%
+        \fi
+        %
+        \ifnum\lastTheoDepth<\TheoDepth%
+            \stepcounter{sectiondepth}%
+        \else%
+            \addtocounter{sectiondepth}{\the\numexpr \TheoDepth-\lastTheoDepth\relax}%
+        \fi%
+        %
+        \edef\lastTheoDepth{\TheoDepth}
+        \setidx\SectToTheoDepth{\thesectiondepth}{\TheoDepth}%
+        %
+        \stepcounter{#1count}%
+        \setidx\SectToSectType{\thesectiondepth}{#1}%
+        \setidx\SectToSectNum{\thesectiondepth}{\sectnum{#1}}%
+        %
+        \def\spacingamount{\fpeval{1/(2^\TheoDepth)}}%
+        \ifnum\thesectiondepth=0%
+            \vspace{1cm}
+            \hrule
+        \fi%
+        \par
+        \vspace{\spacingamount cm}%
+        %\ifnum\thesectiondepth=0
+        %    \hrule%
+        %\fi%
+        %
+        %
+        %%% TEXT HERE
+        \phantomsection%
+        \def\sectionstyling{DEFAULTSECTIONSTYLE}%
+        \ifnum\thesectiondepth<\getlen{\SectionStyling}%
+            \def\sectionstyling{\getidx\SectionStyling{\thesectiondepth}}%
+        \fi%
+        \hyperref[secthead\theheadercounter]{\csname \sectionstyling\endcsname{\textsc{#3 #4{#1count}. ##2}}}%
+        \reversemarginpar\marginpar[%
+            \begin{spacing}{1}%
+                \scriptsize \sectheadabbv%
+            \end{spacing}%
+        ]{}
+        \protected@write \@auxout {}{\string \newlabel {secthead\theheadercounter}{{#2}{\thepage}{#2}{#1}{}} }%
+        %\edef\@currentlabel{\expandafter\sectheadfullname}
+        \label{secthead\theheadercounter}%
+        \par
+        %\\%
+        \stepcounter{headercounter}%
+        %
+        \IfBooleanTF{##1}
+        {}
+        {
+            \ifnum\thesectiondepth<\getlen{\ToCDepths}%
+                \addcontentsline{toc}{\getidx\ToCDepths{\thesectiondepth}}{#3 #4{#1count}. ##2}%
+            \fi%
+        }
+
+
+
+        \fi
+    }%
+    %
+    \def\numsectypes{\getlen{\sectionnames}}%
+    \newcounter{#1count}%
+    \ifnum\numsectypes>0%
+        \edef\lastsecnum{\the\numexpr\numsectypes - 1\relax}%
+        \counterwithin*{#1count}{\getidx\sectionnames{\lastsecnum}count}%
+    \fi%
+    %
+    \addidx\sectionnames{#1}%
+    \addidx\sectionshorts{#2}%
+    \addidx\sectionlongs{#3}%
+    \expandafter\let\csname#1numstyle\endcsname#4
+}
+\makeatother
+
+\makearr{ToCDepths}
+\makearr{SectionStyling}
+
+\addidx\ToCDepths{section}
+\def\SECTIONSTYLE{\normalfont\Large\bfseries\underline}
+\addidx\SectionStyling{SECTIONSTYLE}
+
+\addidx\ToCDepths{subsection}
+\def\SUBSECTIONSTYLE{\normalfont\large\bfseries}
+\addidx\SectionStyling{SUBSECTIONSTYLE}
+
+\addidx\ToCDepths{subsubsection}
+\def\DEFAULTSECTIONSTYLE{\normalfont\normalsize\bfseries}
+
+\addidx\ToCDepths{paragraph}
+%\addidx\SectionStyling{\normalfont\normalsize\bfseries}
+
+\addidx\ToCDepths{subparagraph}
+%\addidx\SectionStyling{\normalfont\normalsize\bfseries}
+
+
+
+\let\appnum\Alph
+\makesectioning{appendix}{APP}{Appendix}{\appnum}
+
+\let\artnum\Roman
+\makesectioning{article}{ART}{Article}{\artnum}[\thelastdepth]
+
+\let\secnum\arabic
+\makesectioning{section}{SEC}{Section}{\secnum}
+
+\let\subnum\arabic
+\makesectioning{subsection}{SUB}{Subsection}{\subnum}
