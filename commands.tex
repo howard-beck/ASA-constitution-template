@@ -215,6 +215,7 @@
     % idx: #2
     % value: #3
     %
+    \typeout{Setting: #1, at #2: to #3}%
     \def\currentlimit{\the\numexpr\getlen{#1}\relax}%
     \ifnum#2>\currentlimit%
         \PackageError{commands}{Cannot set array index out of bounds}{}%
@@ -232,6 +233,21 @@
 \newcommand{\getidx}[2]{%
     \expandafter\csname arrval{#1}at{#2}\endcsname%
 }
+\NewDocumentCommand{\printarr}{m O{0} O{}}{
+    \ifnum#2=\getlen{#1}%
+        #3%
+    \else%
+        \edef\starttext{#1 [\getlen{#1}]: }%
+        \ifstrempty{#3}{%
+        }{%
+            \edef\starttext{#3, }%
+        }%
+        \starttext\printarr{#1}[\the\numexpr1+#2\relax][idx #2: \getidx{#1}{#2}]%
+        %\edef\firstidx{\getidx{#1}{0}}
+        %\typeout{#1: 0th is \expandafter\@firstofone\expandafter{\the\firstidx}}
+        %\starttext idx #2: \getidx{#1}{#2}
+    \fi%
+}
 
 \makearr{sectionnames}
 \makearr{sectionshorts}
@@ -244,18 +260,17 @@
 \newcommand{\getindex}[1]{%
     \expandafter\csname #1index\endcsname%
 }
-\NewDocumentCommand{\printarr}{m O{0} O{}}{
-    \ifnum#2>\getlen{#1}%
-        #3%
-    \else%
-        \edef\starttext{#1: }%
-        \ifstrempty{#3}{%
-        }{%
-            \edef\starttext{#3, }%
-        }%
-        \starttext\printarr{#1}[\the\numexpr1+#2\relax][idx #2: \getidx{#1}{#2}]
-        %\starttext idx #2: \getidx{#1}{#2}
-    \fi%
+
+\usepackage{forloop}
+\newcounter{copyarrcounter}
+\newcommand{\copyarr}[2]{%
+    % array to copy: #1
+    % name to copy into: #2
+    \expandafter\makearr{#2}%
+    \forloop{copyarrcounter}{0}{\value{copyarrcounter} < \getlen{#1}}{%
+        %\typeout{Attempting to copy #1 into #2}
+        \expandafter\addidx\csname#2\endcsname{\getidx{#1}{\thecopyarrcounter}}%
+    }%
 }
 
 \makearr{SectToTheoDepth}
@@ -270,42 +285,60 @@
 }
 
 
-\NewDocumentCommand{\sectheadname}{O{0} O{} m}{%
-    % #3:
+\makeatletter
+
+\newcounter{sectheadnameiter}
+\newcounter{dummysectheadcounter}
+\NewDocumentCommand{\sectheadname}{m m}{%
+    % #1:
     % 1 = full
     % 2 = short
-    \ifnum#1>\thesectiondepth%
-        #2%
-    \else%
-        \edef\starttext{}%
-        \ifstrempty{#2}{%
-        }{%
-            \ifnum#3=1%
-                \edef\starttext{#2, }%
-            \else
-                \edef\starttext{#2\\}%
+    % 3 = ID
+    \edef\returntext{}%
+    \edef\ThisDepth{\getidx\SectDepthsAtCount{#2}}%
+    \edef\ThisSectToSectType{\expandafter\csname SectToSectTypeAtCount#2\endcsname}%
+    \edef\ThisSectToSectNum{\expandafter\csname SectToSectNumAtCount#2\endcsname}%
+    %
+    \forloop{sectheadnameiter}{0}{\value{sectheadnameiter} < \the\numexpr1+\ThisDepth\relax}{%
+        \ifnum\thesectheadnameiter>0%
+            \ifnum#1=1%
+                \edef\returntext{\returntext, }%
+            \else%
+                \ifnum#1=2%
+                    \edef\returntext{\returntext\\}%
+                \else%
+                    \edef\returntext{\returntext-}%
+                \fi%
             \fi%
-        }%
-        \edef\secttypeID{\getidx\SectToSectType{#1}}%
+        \fi%
+        \edef\secttypeID{\getidx\ThisSectToSectType{\thesectheadnameiter}}%
         \edef\indexofsecttype{\getindex{\secttypeID}}%
-        \edef\numbr{\getidx\SectToSectNum{#1}}%
+        \edef\numbr{\getidx\ThisSectToSectNum{\thesectheadnameiter}}%
+        \setcounter{dummysectheadcounter}{\numbr}%
         %
         \let\seclist\sectionshorts%
         \def\secspec{.}%
-        \ifnum#3=1%
+        \ifnum#1=1%
             \let\seclist\sectionlongs%
             \def\secspec{ }%
         \fi%
         %
         \edef\secttypename{\getidx\seclist{\indexofsecttype}}%
-        \starttext\sectheadname[\the\numexpr1+#1\relax][\secttypename\secspec\csname\secttypeID numstyle\endcsname {\secttypeID count}]{#3}%
-    \fi%
+        \edef\returntext{{\protect\returntext}\secttypename\secspec\csname\secttypeID numstyle\endcsname {dummysectheadcounter}}%
+    }%
+    \returntext\xspace
+    %\typeout{Testing}
+    %\typeout{SectAtCountDepths: \expandafter\@firstofone\expandafter\printedsect}
 }
-\NewDocumentCommand{\sectheadfullname}{O{0} O{}}{%
-    \sectheadname[#1][#2]{1}%
+\makeatother
+\DeclareRobustCommand{\sectheadfullname}[1]{%
+    \sectheadname{1}{#1}%
 }
-\NewDocumentCommand{\sectheadabbv}{O{0} O{}}{%
-    \sectheadname[#1][#2]{2}%
+\NewDocumentCommand{\sectheadabbv}{}{%
+    \sectheadname{2}{\theheadercounter}%
+}
+\NewDocumentCommand{\sectheadid}{}{
+    \expandafter\sectheadname{3}{0}%
 }
 
 
@@ -316,10 +349,35 @@
 \usepackage{ifthen}
 
 \newcounter{headercounter}
+\setcounter{headercounter}{-1}
 
 \usepackage{etoolbox}
 
+\makearr{SectToSectTypeHistory}
+\makearr{SectToSectNumHistory}
+\makearr{SectDepthHistory}
+\makearr{SectDepthsAtCount}
+
 \makeatletter
+\newcommand{\declareHeaderAtCount}[4]{%
+    \typeout{Header info [#1]: #2.#3 at #4}
+    % headercounter #1
+    % SectType #2
+    % SectNum #3
+    % depth #4
+    \setidx\SectToSectTypeHistory{#4}{#2}%
+    \setidx\SectToSectNumHistory{#4}{#3}%
+    %
+    \copyarr\SectToSectTypeHistory{SectToSectTypeAtCount#1}%
+    \copyarr\SectToSectNumHistory{SectToSectNumAtCount#1}%
+    \setidx\SectDepthsAtCount{#1}{#4}%
+}
+
+\usepackage{import}
+\import{./}{\jobname.sections}
+\newwrite\SECTIONINFO
+\immediate\openout\SECTIONINFO=\jobname.sections
+
 \NewDocumentCommand{\makesectioning}{ m m m m O{} }{
     % name: 1
     % short: 2
@@ -369,6 +427,16 @@
         \setidx\SectToSectType{\thesectiondepth}{#1}%
         \setidx\SectToSectNum{\thesectiondepth}{\sectnum{#1}}%
         %
+        \stepcounter{headercounter}%
+        
+        %\copyarr{\SectToSectType}{SectToSectTypeAtCount\theheadercounter}
+        %\copyarr{\SectToSectNum}{SectToSectNumAtCount\theheadercounter}
+        %\addidx\SectAtCountDepths{\thesectiondepth}
+        \protected@write\SECTIONINFO{}{\string%
+            \declareHeaderAtCount{\theheadercounter}{#1}{\sectnum{#1}}{\thesectiondepth}%
+        }
+        %\expandafter\edef\csname SectDepthAtCount\theheadercounter\endcsname{\thesectiondepth}
+        %
         \def\spacingamount{\fpeval{1/(2^\TheoDepth)}}%
         \ifnum\thesectiondepth=0%
             \vspace{1cm}
@@ -393,12 +461,21 @@
                 \scriptsize \sectheadabbv%
             \end{spacing}%
         ]{}
-        \protected@write \@auxout {}{\string \newlabel {secthead\theheadercounter}{{#2}{\thepage}{#2}{#1}{}} }%
-        %\edef\@currentlabel{\expandafter\sectheadfullname}
+        \iffalse
+        \protected@write \@auxout {}{%
+            \string \newlabel{secthead\theheadercounter}{%
+                {\expandafter\sectheadfullname}%
+                {\thepage}%
+                {#1}%
+                {\sectheadid}%
+                {}%
+            }%
+        }%
+        \fi
+        \edef\@currentlabel{\sectheadfullname{\theheadercounter}}
         \label{secthead\theheadercounter}%
         \par
         %\\%
-        \stepcounter{headercounter}%
         %
         \IfBooleanTF{##1}
         {}
