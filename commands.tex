@@ -60,6 +60,9 @@
 %% importing other files (used for *-sections.aux referencing)
 \usepackage{import}
 
+%% font
+\usepackage{fontspec}
+
 
 
 \makeatletter
@@ -67,7 +70,11 @@
 %%% Configuration variables
 \@ifundefined{groupname}
 {
-    \PackageError{commands}{Please specify groupname before importing commands package. For example, use \def\groupname{[GROUP NAME HERE]}}{}%
+    \PackageError{commands}{%
+        Please specify groupname BEFORE importing commands.tex. For example, use:\MessageBreak
+        \def\protect\groupname{[GROUP NAME HERE]}\MessageBreak
+        \protect\input{commands.tex}}{}
+    \def\groupname{[GROUP NAME HERE]}
 }
 {}
 \let\@oldgroupname\groupname
@@ -122,6 +129,17 @@
 \fancyhf{}
 \fancyhead[C]{\textsc{\groupname}}
 \fancyfoot[R]{Page \thepage\ of \pageref*{LastPage}}
+
+%%% fonts
+% Gyre Termes is TeX's copy of Times New Roman
+% We don't use Times New Roman (also available)
+% as it doesn't support script fonts
+\setmainfont{TeX Gyre Termes}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%% command redefinitions
