@@ -7,10 +7,15 @@
 %   switch your compiler to XeTeX.
 %   If you are on Overleaf, see:
 %   https://www.overleaf.com/learn/how-to/Changing_compiler
+\usepackage{fontspec}
+% Gyre Termes is TeX's copy of Times New Roman
+% We don't use Times New Roman (also available)
+% as it doesn't support script fonts
+\setmainfont{TeX Gyre Termes}
 
 
 
-%\def\groupname{Association of Student Activities}
+\def\groupname{Association of Student Activities}
 \def\doctype{Operating Guidelines}
 \input{../commands.tex}
 
