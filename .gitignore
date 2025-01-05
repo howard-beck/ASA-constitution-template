@@ -1,5 +1,4 @@
 /examples/**
-*.sections
 
 ## Core latex/pdflatex auxiliary files:
 *.aux

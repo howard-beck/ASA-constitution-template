@@ -1,28 +1,117 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                 Copyright Howard Beck @ 2024                      %
+%                                                                   %
+% Made for the Association of Student Activities (ASA) at the       %
+% Massachusetts Institute of Technology (MIT).                      %
+%                                                                   %
+% Free for use by the ASA, ASA-recognized clubs, and                %
+% collections of students at MIT trying to become an ASA-recognized %
+% club (ASA Organizations).                                         %
+%                                                                   %
+% This software may not be published or distributed except by the   %
+% copyright holder or by the executive board of the ASA.            %
+%                                                                   %
+% Further, do not sublicense and/or sell copies of the software,    %
+% and do not employ it for commercial use.                          %
+%                                                                   %
+% Permission is granted to ASA organizations to freely modify       %
+% any part of this code for their own use, as long as the copyright %
+% notice here is kept in tact, and under the previous conditions.   %
+%                                                                   %
+% Permission is also granted to the executive board ASA to          %
+% distribute modified copies of this code (subject to the above     %
+% restrictions), that may contain different copyrights, so long as  %
+% the following is included:                                        %
+%    Based on code written by Howard Beck, MIT Class of 2025        %
+%                                                                   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \usepackage[margin=1in]{geometry}
-\setlength{\headheight}{15pt}
-
-\let\oldtitle\title
-\renewcommand{\title}[1]{\oldtitle{\textsc{#1}}}
-
-\setlength{\parindent}{0cm}
-
+% fooders, headers
 \usepackage{fancyhdr}
+% reference for last page
 \usepackage{lastpage}
-
+% coloring text
 \usepackage{xcolor}
+% clickable references
+\usepackage[destlabel=true]{hyperref}
+% don't hyphenate text
+\usepackage[none]{hyphenat}
+% commands for changing section commands
+\usepackage{titlesec}
+\usepackage{setspace}
+% specifications for enums and items
+\usepackage[shortlabels]{enumitem}
+% commands for changing table of contents
+\usepackage[titles]{tocloft}
 
+%% command specifications
+% command parser
+\usepackage{xparse}
+% \xspace after commands
+\usepackage{xspace}
+% for loops
+\usepackage{forloop}
+% if and then
+\usepackage{ifthen}
+% various tools for commands
+\usepackage{etoolbox}
+
+%% importing other files (used for *-sections.aux referencing)
+\usepackage{import}
+
+
+
+\makeatletter
+
+%%% Configuration variables
+\@ifundefined{groupname}
+{
+    \PackageError{commands}{Please specify groupname before importing commands package. For example, use \def\groupname{[GROUP NAME HERE]}}{}%
+}
+{}
+\let\@oldgroupname\groupname
+\def\groupname{\@oldgroupname\xspace}
+
+\@ifundefined{doctype}
+{
+    \def\doctype{Constitution}
+}
+{}
+
+
+%%% geometry
+\setlength{\headheight}{15pt}
+% no paragraph indentation
+\setlength{\parindent}{0cm}
+% line spacing
+\linespread{1.25}
+\setlength{\cftbeforesecskip}{0pt}
+% get rid of most \hbox errors
+\tolerance=1
+\emergencystretch=\maxdimen
+\hyphenpenalty=10000
+\hbadness=10000
+
+%%% hyperlinks
 \definecolor{linkblue}{rgb}{0.0, 0.53, 0.74}
 \definecolor{urlred}{HTML}{FF1423}
-\usepackage{hyperref}
+
 \hypersetup{
     colorlinks = true,
     urlcolor = urlred,
-    linkcolor = linkblue
+    linkcolor = linkblue,
+    pdftitle={\groupname \doctype},
+    pdfauthor={\groupname},
+    pdfnewwindow=true,
 }
 
-%\usepackage{cleveref}
-\usepackage[none]{hyphenat}
+%%% itemize and enumerate
+\setlist[itemize]{noitemsep, nolistsep, leftmargin=*, align=left}
+\setlist[enumerate]{noitemsep, nolistsep, leftmargin=*, align=left}
+\renewcommand{\labelenumii}{\alph{enumii}.}
 
+%%% headers and footers
 \fancypagestyle{firststyle}
 {
    \fancyhf{}
@@ -35,166 +124,72 @@
 \fancyfoot[R]{Page \thepage\ of \pageref*{LastPage}}
 
 
+%%% command redefinitions
+\let\old@title\title
+\renewcommand{\title}[1]{\old@title{\textsc{#1}}}
 
-\let\OLDESTSECTION\section
+\let\old@section\section
 
-%\setcounter{secnumdepth}{0}
-\usepackage{xparse}
-\def\nextsecdepth{section}
+% indicate when ToC is being made
+\let\old@tableofcontents\tableofcontents
+\def\@makingTOC{0}
+\renewcommand{\tableofcontents}{%
+    \def\@makingTOC{1}%
+    \begin{spacing}{1}
+        \old@tableofcontents
+    \end{spacing}
+    \def\@makingTOC{0}
+}
+\renewcommand{\contentsname}{\hfill\bfseries\Large \textsc{Contents}\hfill}
 
-\makeatletter
-\newcounter{labelcount}
-\NewDocumentCommand{\nsection}{m m m m m m m O{} O{}}{
-    % section counter: #1
-    % old section command: #2
-    % section pre: #3
-    % section ref: #4
-    % next step name: #5
-    % margin label: #6
-    % total label: #7
-    % optional: #8
-    % header decoration: #9
-    
-    \ExpandArgs{c}\RenewDocumentCommand{#1}{s m}{%
-        \IfBooleanTF{##1}
-        {
-            #2*{##2}
-        }
-        {%
-            #8%
-            \stepcounter{#1}
-            \def\secttext{#3. ##2}%
-            %
-            \def\@currentlabel{\protect{#7}}%
-            \phantomsection
-            #2*{%
-% ignore error on this line, it doesn't exist
-                \hyperref[#4]{#9{\textsc{\secttext}}}
-                \reversemarginpar\marginpar[%
-                    \begin{spacing}{1}%
-                        \scriptsize #6%
-                    \end{spacing}%
-                ]{}%
-            }%
-            \addcontentsline{toc}{#1}{\secttext}%
-            %
-            \def\nextsecdepth{#5}%
-            \label{#4}%
+% force some style decisions on first page
+\let\old@maketitle\maketitle
+\renewcommand{\maketitle}{
+    \old@maketitle
+    % cheaty way to force firststyle to be used for first page
+    \thispagestyle{firststyle}
+    % ... and to put a line
+    \hrule
+}
+
+% allow author and date to be multiline
+\let\old@author\author
+\renewcommand{\author}[1]{
+    \old@author{%
+        \parbox{\linewidth}{%
+            \centering
+            \begin{spacing}{1}
+                #1
+            \end{spacing}
         }
     }
 }
-\makeatother
 
-\usepackage{titlesec}
-\titlespacing{\section}{0pt}{\parskip}{-\parskip}
-\titlespacing{\subsection}{0pt}{\parskip}{-\parskip}
-\titlespacing{\subsubsection}{0pt}{\parskip}{-\parskip}
-
-\let\artnum\Roman
-\let\secnum\arabic
-\let\subsecnum\arabic
-
-\NewCommandCopy{\oldsection}{\section}
-\nsection{section}{\oldsection}{Article \artnum{section}}{art.\artnum{section}}{subsection}{ART.\artnum{section}}{Article \artnum{section}}[\vspace{1cm}\hrule][\underline]
-
-
-\counterwithout{subsection}{section}
-\counterwithin*{subsection}{section}
-\NewCommandCopy{\oldsubsection}{\subsection}
-\nsection{subsection}{\oldsubsection}{Section \secnum{subsection}}{art.\artnum{section}.sec.\secnum{subsection}}{subsubsection}{ART.\artnum{section} \\ SEC.\secnum{subsection}}{Article \artnum{section}, Section \secnum{subsection}}[\vspace{0.5cm}]
-
-\counterwithout{subsubsection}{subsection}
-\counterwithin*{subsubsection}{subsection}
-\NewCommandCopy{\oldsubsubsection}{\subsubsection}
-\nsection{subsubsection}{\oldsubsubsection}{Subsection \subsecnum{subsubsection}}{art.\artnum{section}.sec.\secnum{subsection}.sub.\subsecnum{subsubsection}}{subsubsection}{ART.\artnum{section} \\ SEC.\secnum{subsection} \\ SUB.\subsecnum{subsubsection}}{Article \artnum{section}, Section \secnum{subsection}, Subsection \subsecnum{subsubsection}}
-[\vspace{0.25cm}]
+\let\old@date\date
+\renewcommand{\date}[1]{
+    \old@date{%
+        \parbox{\linewidth}{%
+            \centering
+            \begin{spacing}{1}
+                #1
+            \end{spacing}
+        }
+    }
+}
 
 
 
-\renewcommand{\labelenumii}{\alph{enumii}.}
+
+
+\newcommand{\moiralist}[1]{\href{https://groups.mit.edu/webmoira/list/#1}{#1@mit.edu}}
+\newcommand{\mailmanlist}[1]{\href{https://mailman.mit.edu:444/mailman/admin/#1}{#1@mit.edu}}
+\newcommand{\mailto}[1]{\href{mailto:#1}{#1}}
 
 \newcommand{\officer}[1]{%
     \addcontentsline{toc}{\nextsecdepth}{#1}%
     \hyperref[officer:#1]{\textbf{#1}}%
     \label{officer:#1}%
 }
-
-
-\usepackage{setspace}
-%\singlespacing
-\linespread{1.25}
-
-\usepackage[shortlabels]{enumitem}
-\setlist[itemize]{noitemsep, nolistsep, leftmargin=*}
-\setlist[enumerate]{noitemsep, nolistsep, leftmargin=*}
-
-\usepackage{xspace}
-
-\tolerance=1
-\emergencystretch=\maxdimen
-\hyphenpenalty=10000
-\hbadness=10000
-
-\usepackage[titles]{tocloft}
-\setlength{\cftbeforesecskip}{0pt}
-
-\let\OLDtableofcontents\tableofcontents
-\def\makingTOC{0}
-
-\renewcommand{\tableofcontents}{%
-    \def\makingTOC{1}%
-    \OLDtableofcontents
-}
-\renewcommand{\contentsname}{\hfill\bfseries\Large Contents\hfill}
-\let\oldmaketitle\maketitle
-\renewcommand{\maketitle}{
-    \oldmaketitle
-    \thispagestyle{firststyle}
-    \hrule
-    \begin{spacing}{1}
-        \tableofcontents
-    \end{spacing}
-}
-
-\let\oldauthor\author
-\renewcommand{\author}[1]{
-    \oldauthor{%
-        \parbox{\linewidth}{%
-            \centering
-            \begin{spacing}{1}
-                #1
-            \end{spacing}
-        }
-    }
-}
-
-\let\olddate\date
-\renewcommand{\date}[1]{
-    \olddate{%
-        \parbox{\linewidth}{%
-            \centering
-            \begin{spacing}{1}
-                #1
-            \end{spacing}
-        }
-    }
-}
-
-\let\oldlabel\label
-\renewcommand{\label}[1]{
-    %\expandafter\let\csname label#1\endcsname\currentlabel
-    \oldlabel{#1}
-}
-
-\newcommand{\sectref}[1]{%
-    %\csname label#1\endcsname
-    \labeli
-}
-
-
-\newcommand{\moiralist}[1]{\href{https://groups.mit.edu/webmoira/list/#1}{#1@mit.edu}}
-\newcommand{\mailmanlist}[1]{\href{https://mailman.mit.edu:444/mailman/admin/#1}{#1@mit.edu}}
-\newcommand{\mailto}[1]{\href{mailto:#1}{#1}}
 
 
 \newcounter{arrays}
@@ -215,7 +210,7 @@
     % idx: #2
     % value: #3
     %
-    \typeout{Setting: #1, at #2: to #3}%
+    %%\typeout{Setting: #1, at #2: to #3}%
     \def\currentlimit{\the\numexpr\getlen{#1}\relax}%
     \ifnum#2>\currentlimit%
         \PackageError{commands}{Cannot set array index out of bounds}{}%
@@ -243,9 +238,6 @@
             \edef\starttext{#3, }%
         }%
         \starttext\printarr{#1}[\the\numexpr1+#2\relax][idx #2: \getidx{#1}{#2}]%
-        %\edef\firstidx{\getidx{#1}{0}}
-        %\typeout{#1: 0th is \expandafter\@firstofone\expandafter{\the\firstidx}}
-        %\starttext idx #2: \getidx{#1}{#2}
     \fi%
 }
 
@@ -261,7 +253,7 @@
     \expandafter\csname #1index\endcsname%
 }
 
-\usepackage{forloop}
+
 \newcounter{copyarrcounter}
 \newcommand{\copyarr}[2]{%
     % array to copy: #1
@@ -281,15 +273,14 @@
 \makearr{SectToSectNum}
 
 \newcommand{\sectnum}[1]{%
-    \expandafter\csname the#1count\endcsname
+    \expandafter\csname the#1\endcsname
 }
 
 
-\makeatletter
 
 \newcounter{sectheadnameiter}
 \newcounter{dummysectheadcounter}
-\NewDocumentCommand{\sectheadname}{m m}{%
+\NewDocumentCommand{\sectheadname}{m m O{}}{%
     % #1:
     % 1 = full
     % 2 = short
@@ -307,14 +298,14 @@
                 \ifnum#1=2%
                     \edef\returntext{\returntext\\}%
                 \else%
-                    \edef\returntext{\returntext-}%
+                    \edef\returntext{\returntext.}%
                 \fi%
             \fi%
         \fi%
         \edef\secttypeID{\getidx\ThisSectToSectType{\thesectheadnameiter}}%
         \edef\indexofsecttype{\getindex{\secttypeID}}%
         \edef\numbr{\getidx\ThisSectToSectNum{\thesectheadnameiter}}%
-        \setcounter{dummysectheadcounter}{\numbr}%
+        %\setcounter{dummysectheadcounter}{\numbr}%
         %
         \let\seclist\sectionshorts%
         \def\secspec{.}%
@@ -324,21 +315,25 @@
         \fi%
         %
         \edef\secttypename{\getidx\seclist{\indexofsecttype}}%
-        \edef\returntext{{\protect\returntext}\secttypename\secspec\csname\secttypeID numstyle\endcsname {dummysectheadcounter}}%
+        \edef\returntext{\returntext\secttypename\secspec\numbr}%
     }%
-    \returntext\xspace
-    %\typeout{Testing}
-    %\typeout{SectAtCountDepths: \expandafter\@firstofone\expandafter\printedsect}
+    %
+    \ifstrempty{#3}%
+    {%
+        \returntext\xspace%
+    }%
+    {%
+        \expandafter\let\csname#3\endcsname\returntext
+    }%
 }
-\makeatother
-\DeclareRobustCommand{\sectheadfullname}[1]{%
-    \sectheadname{1}{#1}%
+\NewDocumentCommand{\sectheadfullname}{m O{}}{%
+    \sectheadname{1}{#1}[#2]%
 }
-\NewDocumentCommand{\sectheadabbv}{}{%
-    \sectheadname{2}{\theheadercounter}%
+\NewDocumentCommand{\sectheadabbv}{O{}}{%
+    \sectheadname{2}{\theheadercounter}[#1]%
 }
-\NewDocumentCommand{\sectheadid}{}{
-    \expandafter\sectheadname{3}{0}%
+\NewDocumentCommand{\sectheadid}{O{}}{%
+    \sectheadname{3}{\theheadercounter}[#1]%
 }
 
 
@@ -346,19 +341,17 @@
 \setcounter{lastdepth}{-1}
 
 \edef\lastTheoDepth{-1}
-\usepackage{ifthen}
+
 
 \newcounter{headercounter}
 \setcounter{headercounter}{-1}
 
-\usepackage{etoolbox}
 
 \makearr{SectToSectTypeHistory}
 \makearr{SectToSectNumHistory}
 \makearr{SectDepthHistory}
 \makearr{SectDepthsAtCount}
 
-\makeatletter
 \newcommand{\declareHeaderAtCount}[4]{%
     \typeout{Header info [#1]: #2.#3 at #4}
     % headercounter #1
@@ -373,10 +366,12 @@
     \setidx\SectDepthsAtCount{#1}{#4}%
 }
 
-\usepackage{import}
-\import{./}{\jobname.sections}
+
+\IfFileExists{\jobname-sections.aux}{
+    \import{./}{\jobname-sections.aux}
+}{}
 \newwrite\SECTIONINFO
-\immediate\openout\SECTIONINFO=\jobname.sections
+\immediate\openout\SECTIONINFO=\jobname-sections.aux
 
 \NewDocumentCommand{\makesectioning}{ m m m m O{} }{
     % name: 1
@@ -399,102 +394,83 @@
     \@ifundefined{#1}{
         \let\commandname\NewDocumentCommand
     }{}
-    %\let\commandname\ProvideDocumentCommand
     \ExpandArgs{c}\commandname{#1}{s m}{%
-    \ifnum\makingTOC=1
-            \OLDESTSECTION*{##2}
-            \def\makingTOC{0}
+        \ifnum\@makingTOC=1
+            \old@section*{##2}
         \else
-        
-        \edef\TheoDepth{\getdepth{#1}}%
-        %
-        \ifnum\thesectiondepth>-1
-            \ifnum\TheoDepth>\the\numexpr1+\lastTheoDepth\relax
-                \PackageError{commands}{Cannot use #1, please use section headers sequentially}{}%
+            \edef\TheoDepth{\getdepth{#1}}%
+            %
+            \ifnum\thesectiondepth>-1
+                \ifnum\TheoDepth>\the\numexpr1+\lastTheoDepth\relax
+                    \PackageError{commands}{Cannot use #1, please use section headers sequentially}{}%
+                \fi%
+            \fi
+            %
+            \ifnum\lastTheoDepth<\TheoDepth%
+                \stepcounter{sectiondepth}%
+            \else%
+                \addtocounter{sectiondepth}{\the\numexpr \TheoDepth-\lastTheoDepth\relax}%
             \fi%
-        \fi
-        %
-        \ifnum\lastTheoDepth<\TheoDepth%
-            \stepcounter{sectiondepth}%
-        \else%
-            \addtocounter{sectiondepth}{\the\numexpr \TheoDepth-\lastTheoDepth\relax}%
-        \fi%
-        %
-        \edef\lastTheoDepth{\TheoDepth}
-        \setidx\SectToTheoDepth{\thesectiondepth}{\TheoDepth}%
-        %
-        \stepcounter{#1count}%
-        \setidx\SectToSectType{\thesectiondepth}{#1}%
-        \setidx\SectToSectNum{\thesectiondepth}{\sectnum{#1}}%
-        %
-        \stepcounter{headercounter}%
-        
-        %\copyarr{\SectToSectType}{SectToSectTypeAtCount\theheadercounter}
-        %\copyarr{\SectToSectNum}{SectToSectNumAtCount\theheadercounter}
-        %\addidx\SectAtCountDepths{\thesectiondepth}
-        \protected@write\SECTIONINFO{}{\string%
-            \declareHeaderAtCount{\theheadercounter}{#1}{\sectnum{#1}}{\thesectiondepth}%
-        }
-        %\expandafter\edef\csname SectDepthAtCount\theheadercounter\endcsname{\thesectiondepth}
-        %
-        \def\spacingamount{\fpeval{1/(2^\TheoDepth)}}%
-        \ifnum\thesectiondepth=0%
-            \vspace{1cm}
-            \hrule
-        \fi%
-        \par
-        \vspace{\spacingamount cm}%
-        %\ifnum\thesectiondepth=0
-        %    \hrule%
-        %\fi%
-        %
-        %
-        %%% TEXT HERE
-        \phantomsection%
-        \def\sectionstyling{DEFAULTSECTIONSTYLE}%
-        \ifnum\thesectiondepth<\getlen{\SectionStyling}%
-            \def\sectionstyling{\getidx\SectionStyling{\thesectiondepth}}%
-        \fi%
-        \hyperref[secthead\theheadercounter]{\csname \sectionstyling\endcsname{\textsc{#3 #4{#1count}. ##2}}}%
-        \reversemarginpar\marginpar[%
-            \begin{spacing}{1}%
-                \scriptsize \sectheadabbv%
-            \end{spacing}%
-        ]{}
-        \iffalse
-        \protected@write \@auxout {}{%
-            \string \newlabel{secthead\theheadercounter}{%
-                {\expandafter\sectheadfullname}%
-                {\thepage}%
-                {#1}%
-                {\sectheadid}%
-                {}%
+            %
+            \edef\lastTheoDepth{\TheoDepth}
+            \setidx\SectToTheoDepth{\thesectiondepth}{\TheoDepth}%
+            %
+            \stepcounter{#1}%
+            \setidx\SectToSectType{\thesectiondepth}{#1}%
+            \setidx\SectToSectNum{\thesectiondepth}{\sectnum{#1}}%
+            %
+            \stepcounter{headercounter}%
+            %
+            \protected@write\SECTIONINFO{}{\string%
+                \declareHeaderAtCount{\theheadercounter}{#1}{#4{#1}}{\thesectiondepth}%
+            }
+            %
+            \def\spacingamount{\fpeval{1/(2^\TheoDepth)}}%
+            \ifnum\thesectiondepth=0%
+                \vspace{1cm}
+                \hrule
+            \fi%
+            \par%
+            \vspace{\spacingamount cm}%
+            %
+            %%% TEXT HERE
+            \phantomsection%
+            \def\sectionstyling{DEFAULTSECTIONSTYLE}%
+            \ifnum\thesectiondepth<\getlen{\SectionStyling}%
+                \def\sectionstyling{\getidx\SectionStyling{\thesectiondepth}}%
+            \fi%
+            %
+            \sectheadid[@sectheaddestlabel]%
+            \hyperref[\@sectheaddestlabel]{\csname \sectionstyling\endcsname{\textsc{#3 #4{#1}. ##2}}}%
+            %
+            \reversemarginpar\marginpar[%
+                \begin{spacing}{1}%
+                    \scriptsize \sectheadabbv%
+                \end{spacing}%
+            ]{}%
+            \edef\@currentlabel{\sectheadfullname{\theheadercounter}}%
+            \label{\@sectheaddestlabel}%
+            \par
+            %
+            \IfBooleanTF{##1}%
+            {}%
+            {%
+                \ifnum\thesectiondepth<\getlen{\ToCDepths}%
+                    \addcontentsline{toc}{\getidx\ToCDepths{\thesectiondepth}}{#3 #4{#1}. ##2}%
+                \fi%
             }%
-        }%
-        \fi
-        \edef\@currentlabel{\sectheadfullname{\theheadercounter}}
-        \label{secthead\theheadercounter}%
-        \par
-        %\\%
-        %
-        \IfBooleanTF{##1}
-        {}
-        {
-            \ifnum\thesectiondepth<\getlen{\ToCDepths}%
-                \addcontentsline{toc}{\getidx\ToCDepths{\thesectiondepth}}{#3 #4{#1count}. ##2}%
-            \fi%
-        }
-
-
-
-        \fi
+        \fi%
     }%
     %
     \def\numsectypes{\getlen{\sectionnames}}%
-    \newcounter{#1count}%
+    \@ifundefined{the#1}{
+        \newcounter{#1}%
+    }{
+        \setcounter{#1}{0}
+    }
     \ifnum\numsectypes>0%
         \edef\lastsecnum{\the\numexpr\numsectypes - 1\relax}%
-        \counterwithin*{#1count}{\getidx\sectionnames{\lastsecnum}count}%
+        \counterwithin*{#1}{\getidx\sectionnames{\lastsecnum}}%
     \fi%
     %
     \addidx\sectionnames{#1}%
@@ -502,7 +478,6 @@
     \addidx\sectionlongs{#3}%
     \expandafter\let\csname#1numstyle\endcsname#4
 }
-\makeatother
 
 \makearr{ToCDepths}
 \makearr{SectionStyling}
@@ -537,3 +512,8 @@
 
 \let\subnum\arabic
 \makesectioning{subsection}{SUB}{Subsection}{\subnum}
+
+\let\subsubnum\arabic
+\makesectioning{subsubsection}{SUB$^2$}{Subsubsection}{\subsubnum}
+
+\makeatother
