@@ -19,6 +19,23 @@
 \def\doctype{Operating Guidelines}
 \input{../commands.tex}
 
+\usepackage{xcolor}
+\definecolor{asared}{HTML}{A31F34}
+%\definecolor{asagray}{HTML}{CCC}
+\hypersetup{
+    colorlinks = true,
+    linkcolor = asared,
+    urlcolor = asared
+}
+
+\fancypagestyle{firststyle}
+{
+    \fancyhf{}
+    \fancyfoot[L]{Massachusetts Institute of Technology \\ Cambridge MA 02139-4307 \\ \href{https://accessibility.mit.edu}{Accessibility}}
+    \fancyfoot[R]{Page \thepage\ of \pageref*{LastPage}}
+    \renewcommand{\headrulewidth}{0pt} % removes horizontal header line
+}
+
 %%% NOTE: Here you can change the section numbering
 %   scheme. The following are the defaults which
 %   you can edit by uncommenting. see:
@@ -54,7 +71,11 @@
 
 \maketitle
 
+\newpage
+
 \tableofcontents
+
+\newpage
 
 \article{Student Groups}
 \label{groups}

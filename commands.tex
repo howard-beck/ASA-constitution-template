@@ -36,6 +36,8 @@
 % * @variables
 % * constitution change annotation
 % * paragraph page changes
+% * hrule switch
+% * margin switch
 
 \usepackage[margin=1in]{geometry}
 % fooders, headers
@@ -130,9 +132,9 @@
 %%% headers and footers
 \fancypagestyle{firststyle}
 {
-   \fancyhf{}
-   \fancyfoot[R]{Page \thepage\ of \pageref*{LastPage}}
-   \renewcommand{\headrulewidth}{0pt} % removes horizontal header line
+    \fancyhf{}
+    \fancyfoot[R]{Page \thepage\ of \pageref*{LastPage}}
+    \renewcommand{\headrulewidth}{0pt} % removes horizontal header line
 }
 \pagestyle{fancy}
 \fancyhf{}
@@ -449,7 +451,7 @@
             \def\spacingamount{\fpeval{1/(2^\TheoDepth)}}%
             \ifnum\thesectiondepth=0%
                 \vspace{1cm}
-                \hrule
+                %\hrule
             \fi%
             \par%
             \vspace{\spacingamount cm}%
