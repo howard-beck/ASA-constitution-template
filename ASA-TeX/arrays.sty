@@ -1,0 +1,62 @@
+\makeatletter
+
+\newcounter{arrays}
+\setcounter{arrays}{1}
+
+\newcommand{\makearr}[1]{%
+    \newcounter{@arrlen@#1}%
+    %
+    \expandafter\edef\csname#1\endcsname{#1}%
+    \stepcounter{arrays}%
+}
+
+\newcommand{\getlen}[1]{%
+    \expandafter\csname the@arrlen@#1\endcsname%
+}
+\newcommand{\setidx}[3]{%
+    % array: #1
+    % idx: #2
+    % value: #3
+    \def\currentlimit{\the\numexpr\getlen{#1}\relax}%
+    \ifnum#2>\currentlimit%
+        \ClassError{constitution}{Cannot set array index out of bounds}{}%
+    \else%
+        %\typeout{Setting #1 array at #2 to #3}
+        \expandafter\edef\csname @arrval@#1@at@#2\endcsname{#3}%
+        %
+        \ifnum#2=\currentlimit%
+            \stepcounter{@arrlen@#1}%
+        \fi%
+    \fi%
+}
+\newcommand{\addidx}[2]{%
+    \setidx{#1}{\getlen{#1}}{#2}%
+}
+\def\getidx#1#2{%
+    \expandafter\csname @arrval@#1@at@#2\endcsname%
+}
+\NewDocumentCommand{\printarr}{m O{0} O{}}{
+    \ifnum#2=\getlen{#1}%
+        #3%
+    \else%
+        \edef\starttext{#1 [\getlen{#1}]: }%
+        \ifstrempty{#3}{%
+        }{%
+            \edef\starttext{#3, }%
+        }%
+        \starttext\printarr{#1}[\the\numexpr1+#2\relax][idx #2: \getidx{#1}{#2}]%
+    \fi%
+}
+
+\newcounter{copyarrcounter}
+\newcommand{\copyarr}[2]{%
+    % array to copy: #1
+    % name to copy into: #2
+    \expandafter\makearr{#2}%
+    \forloop{copyarrcounter}{0}{\value{copyarrcounter} < \getlen{#1}}{%
+        %\typeout{Attempting to copy #1 into #2}
+        \expandafter\addidx\csname#2\endcsname{\getidx{#1}{\thecopyarrcounter}}%
+    }%
+}
+
+\makeatother

@@ -1,0 +1,56 @@
+\makeatletter
+
+%%% command redefinitions
+\let\old@title\title
+\renewcommand{\title}[1]{\old@title{\textsc{#1}}}
+
+\let\old@section\section
+
+% indicate when ToC is being made
+\let\old@tableofcontents\tableofcontents
+\def\@makingTOC{0}
+\renewcommand{\tableofcontents}{%
+    \def\@makingTOC{1}%
+    \begin{spacing}{1}
+        \old@tableofcontents
+    \end{spacing}
+    \def\@makingTOC{0}
+}
+\renewcommand{\contentsname}{\hfill\bfseries\Large \textsc{Contents}\hfill}
+
+% force some style decisions on first page
+\let\old@maketitle\maketitle
+\renewcommand{\maketitle}{
+    \old@maketitle
+    % cheaty way to force firststyle to be used for first page
+    \thispagestyle{firststyle}
+    % ... and to put a line
+    \hrule
+}
+
+% allow author and date to be multiline
+\let\old@author\author
+\renewcommand{\author}[1]{
+    \old@author{%
+        \parbox{\linewidth}{%
+            \centering
+            \begin{spacing}{1}
+                #1
+            \end{spacing}
+        }
+    }
+}
+
+\let\old@date\date
+\renewcommand{\date}[1]{
+    \old@date{%
+        \parbox{\linewidth}{%
+            \centering
+            \begin{spacing}{1}
+                #1
+            \end{spacing}
+        }
+    }
+}
+
+\makeatother

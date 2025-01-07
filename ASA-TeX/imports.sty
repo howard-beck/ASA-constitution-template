@@ -1,0 +1,94 @@
+\RequirePackage[margin=1in]{geometry}
+% fooders, headers
+\RequirePackage{fancyhdr}
+% reference for last page
+\RequirePackage{lastpage}
+% coloring text
+\RequirePackage{xcolor}
+% clickable references
+\RequirePackage[destlabel=true]{hyperref}
+% don't hyphenate text
+\RequirePackage[none]{hyphenat}
+% commands for changing section commands
+\RequirePackage{titlesec}
+\RequirePackage{setspace}
+% specifications for enums and items
+\RequirePackage[shortlabels]{enumitem}
+% labels such as a...z, aa...zz, ...
+\RequirePackage{alphalph}
+% commands for changing table of contents
+\RequirePackage[titles]{tocloft}
+
+%% command specifications
+% command parser
+\RequirePackage{xparse}
+% \xspace after commands
+\RequirePackage{xspace}
+% for loops
+\RequirePackage{forloop}
+\RequirePackage{pgffor}
+% if and then
+\RequirePackage{ifthen}
+% various tools for commands
+\RequirePackage{etoolbox}
+
+%% importing other files (used for *-sections.aux referencing)
+\RequirePackage{import}
+
+
+
+
+\makeatletter
+
+\@ifundefined{doctype}
+{
+    \def\doctype{Constitution}
+}
+{}
+
+
+%%% geometry
+\setlength{\headheight}{15pt}
+% no paragraph indentation
+\setlength{\parindent}{0cm}
+% line spacing
+\linespread{1.25}
+\setlength{\cftbeforesecskip}{0pt}
+% get rid of most \hbox errors
+\tolerance=1
+\emergencystretch=\maxdimen
+\hyphenpenalty=10000
+\hbadness=10000
+
+%%% hyperlinks
+\definecolor{linkblue}{rgb}{0.0, 0.53, 0.74}
+\definecolor{urlred}{HTML}{FF1423}
+
+%%% itemize and enumerate
+\let\oldalph\alph
+\def\alph#1{\expandafter\@alph\csname c@#1\endcsname}
+\def\@alph#1{\alphalph{#1}}
+\AddEnumerateCounter{\alph}{\@alph}{a}
+
+\let\oldalph\Alph
+\def\Alph#1{\expandafter\@Alph\csname c@#1\endcsname}
+\def\@Alph#1{\AlphAlph{#1}}
+\AddEnumerateCounter{\Alph}{\@Alph}{A}
+
+\setlist[itemize]{noitemsep, nolistsep, leftmargin=*, align=left}
+\setlist[enumerate]{noitemsep, nolistsep, leftmargin=*, align=left}
+\renewcommand{\labelenumii}{\alph{enumii}.}
+
+%%% headers and footers
+\fancypagestyle{firststyle}
+{
+    \fancyhf{}
+    \fancyfoot[R]{Page \thepage\ of \pageref*{LastPage}}
+    \renewcommand{\headrulewidth}{0pt} % removes horizontal header line
+}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\textsc{\groupname}}
+\fancyfoot[R]{Page \thepage\ of \pageref*{LastPage}}
+
+\makeatother
