@@ -403,6 +403,7 @@
 \setcounter{lastdepth}{-1}
 
 \edef\lastTheoDepth{-1}
+\edef\lastIndex{-2}
 
 
 \newcounter{headercounter}
@@ -493,13 +494,18 @@
                 \fi%
             \fi
             %
-            \ifnum\lastTheoDepth<\TheoDepth%
+            \ifnum\lastIndex<\getindex{#1}%
                 \stepcounter{sectiondepth}%
             \else%
-                \addtocounter{sectiondepth}{\the\numexpr \TheoDepth-\lastTheoDepth\relax}%
+                \edef\@newdepth{\the\numexpr\thesectiondepth+\getindex{#1}-\lastIndex}%
+                \ifnum\@newdepth<0
+                    \edef\@newdepth{0}
+                \fi
+                \setcounter{sectiondepth}{\@newdepth}
             \fi%
             %
             \edef\lastTheoDepth{\TheoDepth}
+            \edef\lastIndex{\getindex{#1}}
             \setidx\SectToTheoDepth{\thesectiondepth}{\TheoDepth}%
             %
             \stepcounter{#1}%
