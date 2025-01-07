@@ -208,6 +208,8 @@
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 \newcommand{\moiralist}[1]{\href{https://groups.mit.edu/webmoira/list/#1}{#1@mit.edu}}
@@ -238,8 +240,6 @@
     % array: #1
     % idx: #2
     % value: #3
-    %
-    %%\typeout{Setting: #1, at #2: to #3}%
     \def\currentlimit{\the\numexpr\getlen{#1}\relax}%
     \ifnum#2>\currentlimit%
         \PackageError{commands}{Cannot set array index out of bounds}{}%
@@ -269,6 +269,12 @@
         \starttext\printarr{#1}[\the\numexpr1+#2\relax][idx #2: \getidx{#1}{#2}]%
     \fi%
 }
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 \makearr{sectionnames}
 \makearr{sectionshorts}
@@ -437,21 +443,9 @@
     \setidx\SectDepthsAtCount{#1}{#4}%
     %
     \expandafter\let\expandafter\sectionIndex\csname#2index\endcsname
-    %\typeout{index of #2: \csname#2index\endcsname}
     \edef\oldtotal{\getidx\@sectionTotalsHistory{\sectionIndex}}
     \setidx\@sectionTotalsHistory{\sectionIndex}{\the\numexpr\oldtotal+1\relax}
     \copyarr\@sectionTotalsHistory{@sectionTotalsHistoryAtCount#1}%
-    
-    %\typeout{#2: \expandafter\expandafter\expandafter\expandafter\sectionIndex}
-    %\edef\oldtotal{\getidx\@sectionTotalsHistory{\sectionIndex}}
-    
-    %
-    %\@ifundefined{@#2counter}%
-    %{%
-    %    \makearr{@#2counterHistory}%
-    %}%
-    %{}%
-    %\setidx
 }
 
 
