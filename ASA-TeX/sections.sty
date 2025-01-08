@@ -34,63 +34,67 @@
     % #3: variable to encode into
     % #4: trim at start?
     \edef\returntext{??}%
-    \edef\ThisDepth{\getidx\SectDepthsAtCount{#2}}%
-    \edef\ThisSectToSectType{\expandafter\csname SectToSectTypeAtCount#2\endcsname}%
-    \edef\ThisSectToSectNum{\expandafter\csname SectToSectNumAtCount#2\endcsname}%
-    \edef\ThisSectionTotalsHistory{\expandafter\csname @sectionTotalsHistoryAtCount#2\endcsname}%
-    %
-    \edef\SectTreeAgree{0}%
-    \ifnum#4=1%
-        \edef\SectTreeAgree{1}%
-    \fi%
-    \setcounter{dummysectheadcounter}{0}%
-    %
-    \forloop{sectheadnameiter}{0}{\value{sectheadnameiter} < \the\numexpr1+\ThisDepth\relax}{%
-        \edef\numbr{\getidx\ThisSectToSectNum{\thesectheadnameiter}}%
-        \edef\currentnumbr{\getidx\SectToSectNum{\thesectheadnameiter}}%
+    \ifnum\getlen{\SectDepthsAtCount}<\the\numexpr1+#2\relax%
+        % do nothing
+    \else
+        \edef\ThisDepth{\getidx\SectDepthsAtCount{#2}}%
+        \edef\ThisSectToSectType{\expandafter\csname SectToSectTypeAtCount#2\endcsname}%
+        \edef\ThisSectToSectNum{\expandafter\csname SectToSectNumAtCount#2\endcsname}%
+        \edef\ThisSectionTotalsHistory{\expandafter\csname @sectionTotalsHistoryAtCount#2\endcsname}%
+        
         %
-        \edef\secttypeID{\getidx\ThisSectToSectType{\thesectheadnameiter}}%
-        \edef\indexofsecttype{\getindex{\secttypeID}}%
-        %
-        %
+        \edef\SectTreeAgree{0}%
         \ifnum#4=1%
-            \edef\@thisSectionTotal{\getidx\ThisSectionTotalsHistory{\indexofsecttype}}%
-            \edef\@currentSectionTotal{\getidx\@sectionTotals{\indexofsecttype}}%
-            %
-            \ifnum\@thisSectionTotal=\@currentSectionTotal%
-            \else%
-                \edef\SectTreeAgree{0}%
-            \fi%
+            \edef\SectTreeAgree{1}%
         \fi%
+        \setcounter{dummysectheadcounter}{0}%
         %
-        \ifnum\SectTreeAgree=0%
-            \ifnum\thedummysectheadcounter>0%
-                \ifnum#1=1%
-                    \edef\returntext{\returntext, }%
+        \forloop{sectheadnameiter}{0}{\value{sectheadnameiter} < \the\numexpr1+\ThisDepth\relax}{%
+            \edef\numbr{\getidx\ThisSectToSectNum{\thesectheadnameiter}}%
+            \edef\currentnumbr{\getidx\SectToSectNum{\thesectheadnameiter}}%
+            %
+            \edef\secttypeID{\getidx\ThisSectToSectType{\thesectheadnameiter}}%
+            \edef\indexofsecttype{\getindex{\secttypeID}}%
+            %
+            %
+            \ifnum#4=1%
+                \edef\@thisSectionTotal{\getidx\ThisSectionTotalsHistory{\indexofsecttype}}%
+                \edef\@currentSectionTotal{\getidx\@sectionTotals{\indexofsecttype}}%
+                %
+                \ifnum\@thisSectionTotal=\@currentSectionTotal%
                 \else%
-                    \ifnum#1=2%
-                        \edef\returntext{\returntext\\}%
-                    \else%
-                        \edef\returntext{\returntext.}%
-                    \fi%
+                    \edef\SectTreeAgree{0}%
                 \fi%
-            \else%
-                \edef\returntext{}%
             \fi%
             %
-            \let\seclist\sectionshorts%
-            \def\secspec{.}%
-            \ifnum#1=1%
-                \let\seclist\sectionlongs%
-                \def\secspec{ }%
+            \ifnum\SectTreeAgree=0%
+                \ifnum\thedummysectheadcounter>0%
+                    \ifnum#1=1%
+                        \edef\returntext{\returntext, }%
+                    \else%
+                        \ifnum#1=2%
+                            \edef\returntext{\returntext\\}%
+                        \else%
+                            \edef\returntext{\returntext.}%
+                        \fi%
+                    \fi%
+                \else%
+                    \edef\returntext{}%
+                \fi%
+                %
+                \let\seclist\sectionshorts%
+                \def\secspec{.}%
+                \ifnum#1=1%
+                    \let\seclist\sectionlongs%
+                    \def\secspec{ }%
+                \fi%
+                \edef\secttypename{\getidx\seclist{\indexofsecttype}}%
+                \edef\returntext{\returntext\secttypename\secspec\numbr}%
+                %
+                \stepcounter{dummysectheadcounter}%
             \fi%
-            %
-            \edef\secttypename{\getidx\seclist{\indexofsecttype}}%
-            \edef\returntext{\returntext\secttypename\secspec\numbr}%
-            %
-            \stepcounter{dummysectheadcounter}%
-        \fi%
-    }%
+        }%
+    \fi%
     %
     \ifstrempty{#3}%
     {%

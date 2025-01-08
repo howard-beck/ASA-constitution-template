@@ -32,7 +32,7 @@
 \newcommand{\addidx}[2]{%
     \setidx{#1}{\getlen{#1}}{#2}%
 }
-\def\getidx#1#2{%
+\newcommand{\getidx}[2]{%
     \expandafter\csname @arrval@#1@at@#2\endcsname%
 }
 \NewDocumentCommand{\printarr}{m O{0} O{}}{
