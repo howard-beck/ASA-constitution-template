@@ -31,11 +31,11 @@
 
 \LoadClass[12pt]{article}
 
-\RequirePackage{./ASA-Tex/imports}
-\RequirePackage{./ASA-Tex/config}
-\RequirePackage{./ASA-Tex/redefs}
-\RequirePackage{./ASA-Tex/arrays}
-\RequirePackage{./ASA-Tex/sections}
+\RequirePackage{./ASA-TeX/imports}
+\RequirePackage{./ASA-TeX/config}
+\RequirePackage{./ASA-TeX/redefs}
+\RequirePackage{./ASA-TeX/arrays}
+\RequirePackage{./ASA-TeX/sections}
 
 \AtEndPreamble{
     %%% Configuration variables
