@@ -31,7 +31,7 @@
 
 \LoadClass[12pt]{article}
 
-\RequirePackage{ASA-TeX/imports}
+\RequirePackage{./ASA-TeX/imports}
 \RequirePackage{./ASA-TeX/config}
 \RequirePackage{./ASA-TeX/redefs}
 \RequirePackage{./ASA-TeX/arrays}
