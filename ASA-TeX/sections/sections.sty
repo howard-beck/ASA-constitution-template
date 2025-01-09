@@ -33,7 +33,7 @@
     % #2: step
     % #3: variable to encode into
     % #4: trim at start?
-    \edef\returntext{??}%
+    \edef\returntext{}%
     \ifnum\getlen{\SectDepthsAtCount}<\the\numexpr1+#2\relax%
         % do nothing
     \else
@@ -369,14 +369,120 @@
 {%
     \@old@endenumerate%
 }
-
 \newcommand{\@itemRef}{
     \edef\starttext{Item }
 }
-\let\olditem\item
+
+\let\@old@item\item
+\newcounter{@itemLabelCounter}
 \def\item{
-    \olditem
+    \@old@item
+    \def\@itemLabelStr{}
+    \def\@itemNameStr{}
+    \ifnum\the\@enumdepth>0%
+        \forloop{@itemLabelCounter}{1}{\value{@itemLabelCounter} < \the\numexpr1+\@enumdepth\relax}{%
+            \ifnum\the@itemLabelCounter>1%
+                \edef\@itemLabelStr{\@itemLabelStr.}
+            \fi%
+            \edef\@itemLabelStr{\@itemLabelStr\arabic{enum\romannumeral\the@itemLabelCounter}}%
+            \edef\@itemName{\csname labelenum\romannumeral\the@itemLabelCounter\endcsname}
+            \edef\@itemNameStr{\@itemNameStr\@itemName}%
+        }%
+        \sectheadid[@itemLabel]%
+        \edef\@currentlabel{\sectheadfullname{\theheadercounter}, Item \@itemNameStr}%
+        \label{\@itemLabel.ITEM.\@itemLabelStr}
+    \fi%
 }
+
+\iffalse
+\NewDocumentCommand{\@itemName}{m m O{} O{0}}{%
+    % #1:
+    %    1 = text
+    %    2 = ID
+    % #2: step
+    % #3: variable to encode into
+    % #4: trim at start?
+    \edef\returntext{\sectheadname}%
+    \ifnum\getlen{\SectDepthsAtCount}<\the\numexpr1+#2\relax%
+        % do nothing
+    \else
+        \edef\ThisDepth{\getidx\SectDepthsAtCount{#2}}%
+        \edef\ThisSectToSectType{\expandafter\csname SectToSectTypeAtCount#2\endcsname}%
+        \edef\ThisSectToSectNum{\expandafter\csname SectToSectNumAtCount#2\endcsname}%
+        \edef\ThisSectionTotalsHistory{\expandafter\csname @sectionTotalsHistoryAtCount#2\endcsname}%
+        %
+        \edef\SectTreeAgree{0}%
+        \ifnum#4=1%
+            \edef\SectTreeAgree{1}%
+        \fi%
+        \setcounter{dummysectheadcounter}{0}%
+        %
+        \forloop{sectheadnameiter}{0}{\value{sectheadnameiter} < \the\numexpr1+\ThisDepth\relax}{%
+            \edef\numbr{\getidx\ThisSectToSectNum{\thesectheadnameiter}}%
+            \edef\currentnumbr{\getidx\SectToSectNum{\thesectheadnameiter}}%
+            %
+            \edef\secttypeID{\getidx\ThisSectToSectType{\thesectheadnameiter}}%
+            \edef\indexofsecttype{\getindex{\secttypeID}}%
+            %
+            %
+            \ifnum#4=1%
+                \edef\@thisSectionTotal{\getidx\ThisSectionTotalsHistory{\indexofsecttype}}%
+                \edef\@currentSectionTotal{\getidx\@sectionTotals{\indexofsecttype}}%
+                %
+                \ifnum\@thisSectionTotal=\@currentSectionTotal%
+                \else%
+                    \edef\SectTreeAgree{0}%
+                \fi%
+            \fi%
+            %
+            \ifnum\SectTreeAgree=0%
+                \ifnum\thedummysectheadcounter>0%
+                    \ifnum#1=1%
+                        \edef\returntext{\returntext, }%
+                    \else%
+                        \ifnum#1=2%
+                            \edef\returntext{\returntext\\}%
+                        \else%
+                            \edef\returntext{\returntext.}%
+                        \fi%
+                    \fi%
+                \else%
+                    \edef\returntext{}%
+                \fi%
+                %
+                \let\seclist\sectionshorts%
+                \def\secspec{.}%
+                \ifnum#1=1%
+                    \let\seclist\sectionlongs%
+                    \def\secspec{ }%
+                \fi%
+                \edef\secttypename{\getidx\seclist{\indexofsecttype}}%
+                \edef\returntext{\returntext\secttypename\secspec\numbr}%
+                %
+                \stepcounter{dummysectheadcounter}%
+            \fi%
+        }%
+    \fi%
+    %
+    \ifstrempty{#3}%
+    {%
+        \returntext%
+    }%
+    {%
+        \expandafter\let\csname#3\endcsname\returntext%
+    }%
+    \setcounter{dummysectheadcounter}{-1}%
+}
+\NewDocumentCommand{\sectheadfullname}{m O{}}{%
+    \sectheadname{1}{#1}[#2][\MakeCompactRefs]%
+}
+\NewDocumentCommand{\sectheadabbv}{O{}}{%
+    \sectheadname{2}{\theheadercounter}[#1][0]%
+}
+\NewDocumentCommand{\sectheadid}{O{}}{%
+    \sectheadname{3}{\theheadercounter}[#1][0]%
+}
+\fi
 
 
 \makeatother

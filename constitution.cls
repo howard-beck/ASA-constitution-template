@@ -35,7 +35,7 @@
 \RequirePackage{./ASA-TeX/config}
 \RequirePackage{./ASA-TeX/redefs}
 \RequirePackage{./ASA-TeX/arrays}
-\RequirePackage{./ASA-TeX/sections}
+\RequirePackage{./ASA-TeX/sections/sections}
 
 \AtEndPreamble{
     %%% Configuration variables
