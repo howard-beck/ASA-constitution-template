@@ -21,8 +21,7 @@
     \ifnum#2>\currentlimit%
         \ClassError{constitution}{Cannot set array index out of bounds}{}%
     \else%
-        %\typeout{Setting #1 array at #2 to #3}
-        \expandafter\edef\csname @arrval@#1@at@#2\endcsname{#3}%
+        \global\expandafter\edef\csname @arrval@#1@at@#2\endcsname{#3}%
         %
         \ifnum#2=\currentlimit%
             \stepcounter{@arrlen@#1}%
@@ -54,7 +53,6 @@
     % name to copy into: #2
     \expandafter\makearr{#2}%
     \forloop{copyarrcounter}{0}{\value{copyarrcounter} < \getlen{#1}}{%
-        %\typeout{Attempting to copy #1 into #2}
         \expandafter\addidx\csname#2\endcsname{\getidx{#1}{\thecopyarrcounter}}%
     }%
 }
