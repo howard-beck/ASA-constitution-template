@@ -31,6 +31,8 @@
 
 \LoadClass[12pt]{article}
 
+\makeatletter
+
 \RequirePackage{./ASA-TeX/imports}
 \RequirePackage{./ASA-TeX/config}
 \RequirePackage{./ASA-TeX/redefs}
@@ -73,3 +75,5 @@
     \hyperref[officer:#1]{\textbf{#1}}%
     \label{officer:#1}%
 }
+
+\makeatother

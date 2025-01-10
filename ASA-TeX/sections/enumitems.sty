@@ -1,0 +1,75 @@
+\NewCommandCopy\@old@enumerate\enumerate
+\NewCommandCopy\@old@endenumerate\endenumerate
+\renewenvironment{enumerate}[1][]%
+{%
+    \ifnum\@enumdepth=0%
+        \ifnum\theenumi=0%
+            \@old@enumerate[#1]%
+        \else%
+            \ifstrempty{#1}%
+            {%
+                \@old@enumerate[resume]%
+            }%
+            {%
+                \@old@enumerate[#1,resume]%
+            }%
+        \fi%
+    \else%
+        \@old@enumerate[#1]%
+    \fi%
+    \addtocounter{sectiondepth}{1}
+    % \@enumdepth hasn't been increased yet
+    \typeout{enum depth \the\@enumdepth v.s \@maxEnumDepth}
+    \ifnum\the\@enumdepth=\@maxEnumDepth
+        \typeout{increasing \protect\@maxEnumDepth because of \@enumdepth}
+        \global\edef\@maxEnumDepth{\the\numexpr1+\@enumdepth\relax}
+    \fi
+}%
+{%
+    \addtocounter{sectiondepth}{-1}
+    \@old@endenumerate%
+}
+\AtEndDocument{%
+    \protected@write\SECTIONINFO{}{\string%
+        \edef\protect\@maxEnumDepth{\@maxEnumDepth}
+    }
+}
+\newcommand{\@itemRef}{
+    \edef\starttext{Item }
+}
+
+\let\@old@item\item
+\newcounter{@itemLabelCounter}
+
+\def\item{
+    \@old@item 
+    \ifnum\the\@enumdepth>0%
+        \edef\@thisItemName{item\romannumeral\the\@enumdepth}
+        %
+        \edef\@oldtotal{\getidx\@sectionTotals{\csname\@thisItemName index\endcsname}}%
+        \setidx\@sectionTotals{\csname\@thisItemName index\endcsname}{\the\numexpr\@oldtotal+1\relax}%
+        %
+        \stepcounter{\@thisItemName}
+        \stepcounter{headercounter}%
+        \sectheadid[@sectheaddestlabel]%
+        \protected@write\SECTIONINFO{}{\string%
+            \declareHeaderAtCount{\theheadercounter}{\@thisItemName}%
+                {\csname labelenum\romannumeral\the\@enumdepth\endcsname}%
+                {\thesectiondepth}%
+        }%
+        \edef\@currentlabel{\sectheadfullname{\theheadercounter}}%
+        \label{\@sectheaddestlabel}%
+    \fi
+}
+
+\newcommand{\make@enums}{
+    \@ifundefined{@maxEnumDepth}
+    {
+        \edef\@maxEnumDepth{1}
+    }
+    {}
+    \newcounter{@maxEnumDepthCounter}
+    \forloop{@maxEnumDepthCounter}{1}{\value{@maxEnumDepthCounter} < \the\numexpr1+\@maxEnumDepth\relax}{%
+        \@makeLabelable{item\romannumeral\the@maxEnumDepthCounter}{ITEM}{Item}{0}
+    }
+}

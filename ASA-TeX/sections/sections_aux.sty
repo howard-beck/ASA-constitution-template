@@ -1,0 +1,51 @@
+\makearr{SectToSectTypeHistory}
+\makearr{SectToSectNumHistory}
+\makearr{SectDepthHistory}
+\makearr{SectDepthsAtCount}
+
+\makearr{@apriori@section@names}
+
+\makearr{@sectionTotalsHistory}
+\def\@madeSections{0}
+\newcommand{\@makeFutureSection}[1]{
+    \addidx\@apriori@section@names{#1}
+    \addidx\@sectionTotalsHistory{0}
+
+    \expandafter\edef\csname#1index\endcsname{\getlen{\sectionnames}}%
+    \addidx\sectionnames{#1}%
+    \def\@madeSections{1}
+}
+
+\newcommand{\declareHeaderAtCount}[4]{%
+    \typeout{Header info [#1]: #2.#3 at #4}
+    % headercounter #1
+    % SectType #2
+    % SectNum #3
+    % depth #4
+    %
+    \@ifundefined{#2index}%
+    {%
+        \@makeFutureSection{#2}%
+    }%
+    {}%
+    %
+    \setidx\SectToSectTypeHistory{#4}{#2}%
+    \setidx\SectToSectNumHistory{#4}{#3}%
+    %
+    \copyarr\SectToSectTypeHistory{SectToSectTypeAtCount#1}%
+    \copyarr\SectToSectNumHistory{SectToSectNumAtCount#1}%
+    \setidx\SectDepthsAtCount{#1}{#4}%
+    %
+    \expandafter\let\expandafter\sectionIndex\csname#2index\endcsname
+    \edef\oldtotal{\getidx\@sectionTotalsHistory{\sectionIndex}}
+    \setidx\@sectionTotalsHistory{\sectionIndex}{\the\numexpr\oldtotal+1\relax}
+    \copyarr\@sectionTotalsHistory{@sectionTotalsHistoryAtCount#1}%
+}
+
+
+\IfFileExists{\jobname-sections.aux}{
+    %\@makeFutureSection{item}
+    \import{./}{\jobname-sections.aux}
+}{}
+\newwrite\SECTIONINFO
+\immediate\openout\SECTIONINFO=\jobname-sections.aux
