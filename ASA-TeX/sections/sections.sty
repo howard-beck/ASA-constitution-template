@@ -29,12 +29,46 @@
 \newcounter{lastdepth}
 \setcounter{lastdepth}{-1}
 
-\edef\lastTheoDepth{-1}
-\edef\lastIndex{-2}
+\xdef\lastTheoDepth{-1}
+\xdef\lastIndex{-2}
 
 
 \newcounter{headercounter}
 \setcounter{headercounter}{-1}
+
+
+
+
+\RequirePackage{environ}
+\newlength{\@sectContentBoxLength}
+\newsavebox{\@sectContentBox}
+
+
+\def\@sectBegin#1@EndSect{
+    BEGIN
+    #1
+    END
+}
+
+%\def\@MySectContent{}
+%\def\end@MySectContent{}
+
+\iffalse
+\newenvironment{@SectContent}
+{
+    \hrule
+    BEGIN SECT%
+    \savebox{\@sectContentBox}{
+}
+{
+    }
+    \usebox{\@sectContentBox}
+    END SECT
+    \settoheight{\@sectContentBoxLength}{\usebox{\@sectContentBox}}
+    Height: \the\@sectContentBoxLength
+    \hrule
+}
+\fi
 
 
 \NewDocumentCommand{\makesectioning}{ m m m m O{} O{1} }{
@@ -45,12 +79,12 @@
     % depth: #5
     % counter within previous: #6
     %
-    \edef\nextdepth{\the\numexpr1+\thelastdepth\relax}%
+    \xdef\nextdepth{\the\numexpr1+\thelastdepth\relax}%
     \ifstrempty{#5}{%
     }{%
-        \edef\nextdepth{#5}%
+        \xdef\nextdepth{#5}%
     }%
-    \expandafter\edef\csname #1depth\endcsname{\nextdepth}%
+    \expandafter\xdef\csname #1depth\endcsname{\nextdepth}%
     \setcounter{lastdepth}{\nextdepth}%
     %
     %
@@ -63,11 +97,13 @@
         \let\commandname\NewDocumentCommand
     }{}
     \ExpandArgs{c}\commandname{#1}{s m}{%
-        \ifnum\@makingTOC=1
+        @EndSect%
+
+        \ifnum\@makingTOC=1%
             \old@section*{##2}
-        \else
+        \else%
             \setcounter{enumi}{0}
-            \edef\TheoDepth{\getdepth{#1}}%
+            \xdef\TheoDepth{\getdepth{#1}}%
             %
             \ifnum\thesectiondepth>-1
                 \ifnum\TheoDepth>\the\numexpr1+\lastTheoDepth\relax
@@ -78,25 +114,25 @@
             \ifnum\lastIndex<\getindex{#1}%
                 \stepcounter{sectiondepth}%
             \else%
-                \edef\@newdepth{\the\numexpr\thesectiondepth+\getindex{#1}-\lastIndex}%
+                \xdef\@newdepth{\the\numexpr\thesectiondepth+\getindex{#1}-\lastIndex}%
                 \ifnum\@newdepth<0
-                    \edef\@newdepth{0}
+                    \xdef\@newdepth{0}
                 \fi
                 \setcounter{sectiondepth}{\@newdepth}
             \fi%
             %
-            \edef\lastTheoDepth{\TheoDepth}
-            \edef\lastIndex{\getindex{#1}}
+            \xdef\lastTheoDepth{\TheoDepth}
+            \xdef\lastIndex{\getindex{#1}}
             \setidx\SectToTheoDepth{\thesectiondepth}{\TheoDepth}%
             %
             \stepcounter{#1}%
             \setidx\SectToSectType{\thesectiondepth}{#1}%
             \setidx\SectToSectNum{\thesectiondepth}{#4{#1}}%
             %
-            \def\oldtotal{\getidx\@sectionTotals{\csname#1index\endcsname}}
+            \gdef\oldtotal{\getidx\@sectionTotals{\csname#1index\endcsname}}
             \setidx\@sectionTotals{\csname#1index\endcsname}{\the\numexpr\oldtotal+1\relax}
             %
-            \def\spacingamount{\fpeval{1/(2^\TheoDepth)}}%
+            \gdef\spacingamount{\fpeval{1/(2^\TheoDepth)}}%
             \ifnum\thesectiondepth=0%
                 \vspace{1cm}
                 %\hrule
@@ -106,9 +142,9 @@
             %
             %%% TEXT HERE
             \phantomsection%
-            \def\sectionstyling{DEFAULTSECTIONSTYLE}%
+            \gdef\sectionstyling{DEFAULTSECTIONSTYLE}%
             \ifnum\thesectiondepth<\getlen{\SectionStyling}%
-                \def\sectionstyling{\getidx\SectionStyling{\thesectiondepth}}%
+                \gdef\sectionstyling{\getidx\SectionStyling{\thesectiondepth}}%
             \fi%
             %
             \stepcounter{headercounter}%
@@ -117,7 +153,7 @@
             \protected@write\SECTIONINFO{}{\string%
                 \declareHeaderAtCount{\theheadercounter}{#1}{#4{#1}}{\thesectiondepth}%
             }%
-            \edef\@currentlabel{\sectheadfullname{\theheadercounter}}%
+            \xdef\@currentlabel{\sectheadfullname{\theheadercounter}}%
             \label{\@sectheaddestlabel}%
             %
             \reversemarginpar\marginpar[%
@@ -135,7 +171,10 @@
                     \addcontentsline{toc}{\getidx\ToCDepths{\thesectiondepth}}{#3 #4{#1}. ##2}%
                 \fi%
             }%
+            %
         \fi%
+        %
+        \@sectBegin
     }%
 }
 
@@ -143,15 +182,15 @@
 \makearr{SectionStyling}
 
 \addidx\ToCDepths{section}
-\def\SECTIONSTYLE{\normalfont\Large\bfseries\underline}
+\gdef\SECTIONSTYLE{\normalfont\Large\bfseries\underline}
 \addidx\SectionStyling{SECTIONSTYLE}
 
 \addidx\ToCDepths{subsection}
-\def\SUBSECTIONSTYLE{\normalfont\large\bfseries}
+\gdef\SUBSECTIONSTYLE{\normalfont\large\bfseries}
 \addidx\SectionStyling{SUBSECTIONSTYLE}
 
 \addidx\ToCDepths{subsubsection}
-\def\DEFAULTSECTIONSTYLE{\normalfont\normalsize\bfseries}
+\gdef\gdefAULTSECTIONSTYLE{\normalfont\normalsize\bfseries}
 
 \addidx\ToCDepths{paragraph}
 %\addidx\SectionStyling{\normalfont\normalsize\bfseries}

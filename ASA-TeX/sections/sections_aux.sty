@@ -6,14 +6,14 @@
 \makearr{@apriori@section@names}
 
 \makearr{@sectionTotalsHistory}
-\def\@madeSections{0}
+\gdef\@madeSections{0}
 \newcommand{\@makeFutureSection}[1]{
     \addidx\@apriori@section@names{#1}
     \addidx\@sectionTotalsHistory{0}
 
-    \expandafter\edef\csname#1index\endcsname{\getlen{\sectionnames}}%
+    \expandafter\xdef\csname#1index\endcsname{\getlen{\sectionnames}}%
     \addidx\sectionnames{#1}%
-    \def\@madeSections{1}
+    \gdef\@madeSections{1}
 }
 
 \newcommand{\declareHeaderAtCount}[4]{%
@@ -37,7 +37,7 @@
     \setidx\SectDepthsAtCount{#1}{#4}%
     %
     \expandafter\let\expandafter\sectionIndex\csname#2index\endcsname
-    \edef\oldtotal{\getidx\@sectionTotalsHistory{\sectionIndex}}
+    \xdef\oldtotal{\getidx\@sectionTotalsHistory{\sectionIndex}}
     \setidx\@sectionTotalsHistory{\sectionIndex}{\the\numexpr\oldtotal+1\relax}
     \copyarr\@sectionTotalsHistory{@sectionTotalsHistoryAtCount#1}%
 }

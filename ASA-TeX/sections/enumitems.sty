@@ -22,7 +22,7 @@
     \typeout{enum depth \the\@enumdepth v.s \@maxEnumDepth}
     \ifnum\the\@enumdepth=\@maxEnumDepth
         \typeout{increasing \protect\@maxEnumDepth because of \@enumdepth}
-        \global\edef\@maxEnumDepth{\the\numexpr1+\@enumdepth\relax}
+        \xdef\@maxEnumDepth{\the\numexpr1+\@enumdepth\relax}
     \fi
 }%
 {%
@@ -31,22 +31,22 @@
 }
 \AtEndDocument{%
     \protected@write\SECTIONINFO{}{\string%
-        \edef\protect\@maxEnumDepth{\@maxEnumDepth}
+        \xdef\protect\@maxEnumDepth{\@maxEnumDepth}
     }
 }
 \newcommand{\@itemRef}{
-    \edef\starttext{Item }
+    \xdef\starttext{Item }
 }
 
 \let\@old@item\item
 \newcounter{@itemLabelCounter}
 
-\def\item{
+\gdef\item{
     \@old@item 
     \ifnum\the\@enumdepth>0%
-        \edef\@thisItemName{item\romannumeral\the\@enumdepth}
+        \xdef\@thisItemName{item\romannumeral\the\@enumdepth}
         %
-        \edef\@oldtotal{\getidx\@sectionTotals{\csname\@thisItemName index\endcsname}}%
+        \xdef\@oldtotal{\getidx\@sectionTotals{\csname\@thisItemName index\endcsname}}%
         \setidx\@sectionTotals{\csname\@thisItemName index\endcsname}{\the\numexpr\@oldtotal+1\relax}%
         %
         \stepcounter{\@thisItemName}
@@ -57,7 +57,7 @@
                 {\csname labelenum\romannumeral\the\@enumdepth\endcsname}%
                 {\thesectiondepth}%
         }%
-        \edef\@currentlabel{\sectheadfullname{\theheadercounter}}%
+        \xdef\@currentlabel{\sectheadfullname{\theheadercounter}}%
         \label{\@sectheaddestlabel}%
     \fi
 }
@@ -65,7 +65,7 @@
 \newcommand{\make@enums}{
     \@ifundefined{@maxEnumDepth}
     {
-        \edef\@maxEnumDepth{1}
+        \xdef\@maxEnumDepth{1}
     }
     {}
     \newcounter{@maxEnumDepthCounter}
