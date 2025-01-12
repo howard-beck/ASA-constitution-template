@@ -19,6 +19,8 @@
 \makearr{SectToTheoDepth}
 \newcounter{sectiondepth}
 \setcounter{sectiondepth}{-1}
+\newcounter{sectiondepth@noitems}
+\setcounter{sectiondepth@noitems}{-1}
 
 \makearr{SectToSectType}
 \makearr{SectToSectNum}
@@ -29,81 +31,50 @@
 \newcounter{lastdepth}
 \setcounter{lastdepth}{-1}
 
-\xdef\lastTheoDepth{-1}
-\xdef\lastIndex{-2}
+\edef\lastTheoDepth{-1}
+\edef\lastIndex{-2}
 
 
 \newcounter{headercounter}
 \setcounter{headercounter}{-1}
 
 
-
-
-\RequirePackage{environ}
-\newlength{\@sectContentBoxLength}
-\newsavebox{\@sectContentBox}
-
-
-\def\@sectBegin#1@EndSect{
-    BEGIN
-    #1
-    END
-}
-
-%\def\@MySectContent{}
-%\def\end@MySectContent{}
-
-\iffalse
-\newenvironment{@SectContent}
-{
-    \hrule
-    BEGIN SECT%
-    \savebox{\@sectContentBox}{
-}
-{
-    }
-    \usebox{\@sectContentBox}
-    END SECT
-    \settoheight{\@sectContentBoxLength}{\usebox{\@sectContentBox}}
-    Height: \the\@sectContentBoxLength
-    \hrule
-}
-\fi
-
-
-\NewDocumentCommand{\makesectioning}{ m m m m O{} O{1} }{
+\NewDocumentCommand{\makesectioning}{ m m m O{} O{1} }{
     % name: 1
     % short: 2
     % full: 3
-    % number type: #4
-    % depth: #5
-    % counter within previous: #6
+    % depth: #4
+    % counter within previous: #5
     %
-    \xdef\nextdepth{\the\numexpr1+\thelastdepth\relax}%
-    \ifstrempty{#5}{%
+    \edef\nextdepth{\the\numexpr1+\thelastdepth\relax}%
+    \ifstrempty{#4}{%
     }{%
-        \xdef\nextdepth{#5}%
+        \edef\nextdepth{#4}%
     }%
-    \expandafter\xdef\csname #1depth\endcsname{\nextdepth}%
+    \expandafter\edef\csname #1depth\endcsname{\nextdepth}%
     \setcounter{lastdepth}{\nextdepth}%
     %
     %
-    \@makeLabelable{#1}{#2}{#3}{#6}
-    \expandafter\let\csname#1numstyle\endcsname#4
+    \@makeLabelable{#1}{#2}{#3}{#5}
+    \@ifundefined{#1numstyle}%
+    {
+        \expandafter\let\csname#1numstyle\endcsname\defaultnumstyle
+    }
+    {}
     %
     %
     \let\commandname\RenewDocumentCommand
     \@ifundefined{#1}{
         \let\commandname\NewDocumentCommand
     }{}
+    \typeout{making section command #1 #2 #3}
     \ExpandArgs{c}\commandname{#1}{s m}{%
-        @EndSect%
-
-        \ifnum\@makingTOC=1%
+        \typeout{#1 section title ##2}
+        \ifnum\@makingTOC=1
             \old@section*{##2}
-        \else%
+        \else
             \setcounter{enumi}{0}
-            \xdef\TheoDepth{\getdepth{#1}}%
+            \edef\TheoDepth{\getdepth{#1}}%
             %
             \ifnum\thesectiondepth>-1
                 \ifnum\TheoDepth>\the\numexpr1+\lastTheoDepth\relax
@@ -114,25 +85,31 @@
             \ifnum\lastIndex<\getindex{#1}%
                 \stepcounter{sectiondepth}%
             \else%
-                \xdef\@newdepth{\the\numexpr\thesectiondepth+\getindex{#1}-\lastIndex}%
-                \ifnum\@newdepth<0
-                    \xdef\@newdepth{0}
-                \fi
-                \setcounter{sectiondepth}{\@newdepth}
+                \edef\@newdepth{\the\numexpr\thesectiondepth+\getindex{#1}-\lastIndex}%
+                \ifnum\@newdepth<0%
+                    \edef\@newdepth{0}%
+                \fi%
+                \setcounter{sectiondepth}{\@newdepth}%
+                %
+                \edef\@newdepth@noitems{\the\numexpr\thesectiondepth@noitems+\getindex{#1}-\lastIndex}%
+                \ifnum\@newdepth@noitems<0%
+                    \edef\@newdepth@noitems{0}%
+                \fi%
+                \setcounter{sectiondepth@noitems}{\@newdepth@noitems}%
             \fi%
             %
-            \xdef\lastTheoDepth{\TheoDepth}
-            \xdef\lastIndex{\getindex{#1}}
+            \edef\lastTheoDepth{\TheoDepth}
+            \edef\lastIndex{\getindex{#1}}
             \setidx\SectToTheoDepth{\thesectiondepth}{\TheoDepth}%
             %
             \stepcounter{#1}%
             \setidx\SectToSectType{\thesectiondepth}{#1}%
-            \setidx\SectToSectNum{\thesectiondepth}{#4{#1}}%
+            \setidx\SectToSectNum{\thesectiondepth}{\csname#1numstyle\endcsname{#1}}%
             %
-            \gdef\oldtotal{\getidx\@sectionTotals{\csname#1index\endcsname}}
+            \def\oldtotal{\getidx\@sectionTotals{\csname#1index\endcsname}}
             \setidx\@sectionTotals{\csname#1index\endcsname}{\the\numexpr\oldtotal+1\relax}
             %
-            \gdef\spacingamount{\fpeval{1/(2^\TheoDepth)}}%
+            \def\spacingamount{\fpeval{1/(2^\TheoDepth)}}%
             \ifnum\thesectiondepth=0%
                 \vspace{1cm}
                 %\hrule
@@ -142,18 +119,22 @@
             %
             %%% TEXT HERE
             \phantomsection%
-            \gdef\sectionstyling{DEFAULTSECTIONSTYLE}%
-            \ifnum\thesectiondepth<\getlen{\SectionStyling}%
-                \gdef\sectionstyling{\getidx\SectionStyling{\thesectiondepth}}%
-            \fi%
+            \@ifundefined{#1style}%
+            {%
+                \typeout{undefined style: #1style}
+                \let\@sectionstyling\defaultstyle%
+            }%
+            {%
+                \expandafter\let\expandafter\@sectionstyling\csname#1style\endcsname
+            }%
             %
             \stepcounter{headercounter}%
             \sectheadid[@sectheaddestlabel]%
-            \hyperref[\@sectheaddestlabel]{\csname \sectionstyling\endcsname{\textsc{#3 #4{#1}. ##2}}}%
+            \hyperref[\@sectheaddestlabel]{\@sectionstyling{#3 \csname#1numstyle\endcsname{#1}. ##2}}%
             \protected@write\SECTIONINFO{}{\string%
-                \declareHeaderAtCount{\theheadercounter}{#1}{#4{#1}}{\thesectiondepth}%
+                \declareHeaderAtCount{\theheadercounter}{#1}{\csname#1numstyle\endcsname{#1}}{\thesectiondepth}%
             }%
-            \xdef\@currentlabel{\sectheadfullname{\theheadercounter}}%
+            \edef\@currentlabel{\sectheadfullname{\theheadercounter}}%
             \label{\@sectheaddestlabel}%
             %
             \reversemarginpar\marginpar[%
@@ -168,51 +149,65 @@
             {}%
             {%
                 \ifnum\thesectiondepth<\getlen{\ToCDepths}%
-                    \addcontentsline{toc}{\getidx\ToCDepths{\thesectiondepth}}{#3 #4{#1}. ##2}%
+                    \addcontentsline{toc}{\getidx\ToCDepths{\thesectiondepth}}{#3 \csname#1numstyle\endcsname{#1}. ##2}%
                 \fi%
             }%
-            %
         \fi%
-        %
-        \@sectBegin
     }%
 }
 
 \makearr{ToCDepths}
-\makearr{SectionStyling}
-
 \addidx\ToCDepths{section}
-\gdef\SECTIONSTYLE{\normalfont\Large\bfseries\underline}
-\addidx\SectionStyling{SECTIONSTYLE}
-
 \addidx\ToCDepths{subsection}
-\gdef\SUBSECTIONSTYLE{\normalfont\large\bfseries}
-\addidx\SectionStyling{SUBSECTIONSTYLE}
-
 \addidx\ToCDepths{subsubsection}
-\gdef\gdefAULTSECTIONSTYLE{\normalfont\normalsize\bfseries}
-
 \addidx\ToCDepths{paragraph}
-%\addidx\SectionStyling{\normalfont\normalsize\bfseries}
-
 \addidx\ToCDepths{subparagraph}
-%\addidx\SectionStyling{\normalfont\normalsize\bfseries}
 
 
 
 \make@enums{}
 
-\let\appnum\Alph
-\makesectioning{appendix}{APP}{Appendix}{\appnum}[0][0]
+\makesectioning{appendix}{APP}{Appendix}[0][0]
+\makesectioning{article}{ART}{Article}[\thelastdepth]
+\makesectioning{section}{SEC}{Section}
 
-\let\artnum\Roman
-\makesectioning{article}{ART}{Article}{\artnum}[\thelastdepth]
+\newcounter{@makeNsub@counter}
+\newcommand{\makeNsubsection}[1]{
+    \def\@subetc{}
+    \def\@Subsubetc{Sub}
+    \forloop{@makeNsub@counter}{0}{\value{@makeNsub@counter} < #1}{
+        \edef\@subetc{\@subetc sub}
+        \ifnum\the@makeNsub@counter>0
+            \edef\@Subsubetc{\@Subsubetc sub}
+        \fi
+    }
+    %\def\@subetc{\foreach \@n in {1, ..., #1}{sub}}
+    \ifnum#1>1
+        \def\@subExp{$^{#1}$}
+    \else
+        \def\@subExp{}
+    \fi
+    %\def\@Subsubetc{Sub\foreach \@n in {2, ..., #1}{sub}}
 
-\let\secnum\arabic
-\makesectioning{section}{SEC}{Section}{\secnum}
+    \expandafter\let\csname @subetc#1\endcsname\@subetc
+    \expandafter\let\csname @subExp#1\endcsname\@subExp
+    \expandafter\let\csname @Subsubetc#1\endcsname\@Subsubetc
 
-\let\subnum\arabic
-\makesectioning{subsection}{SUB}{Subsection}{\subnum}
+    \makesectioning{\csname @subetc#1\endcsname section}{SUB\csname @subExp#1\endcsname}{\csname @Subsubetc#1\endcsname section}
+    %\typeout{\protect\makesectioning{\csname @subetc#1\endcsname section}{SUB\csname @subExp#1\endcsname}{\csname @Subsubetc#1\endcsname section}}
+}
+\makeNsubsection{1}
+\makeNsubsection{2}
+%\makesectioning{subsection}{SUB}{Subsection}
+%\makesectioning{subsubsection}{SUB$^2$}{Subsubsection}
 
-\let\subsubnum\arabic
-\makesectioning{subsubsection}{SUB$^2$}{Subsubsection}{\subsubnum}
+
+
+
+\newcommand{\officer}[1]{%
+    %\addcontentsline{toc}{\nextsecdepth}{#1}%
+    \hyperref[officer:#1]{\textbf{\textcolor{defaultcolor}{#1}}}%
+    \global\edef\@currentlabel{1}%
+    \label{officer:#1}%
+    \addcontentsline{toc}{\getidx\ToCDepths{\the\numexpr1+\thesectiondepth@noitems\relax}}{[Officer] #1}%
+}

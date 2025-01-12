@@ -4,7 +4,7 @@
 
 %%% NOTE: the following code puts the document in
 %   Times New Roman. If you want to keep it, please
-%   switch your compiler to XeTeX.
+%   switch your compiler to Xe(La)TeX.
 %   If you are on Overleaf, see:
 %   https://www.overleaf.com/learn/how-to/Changing_compiler
 \usepackage{fontspec}
@@ -1072,12 +1072,12 @@ This Operating Guidelines Appendix may only be modified via the process outlined
 \article{Committees}
 
 \setcounter{section}{6}
-\let\secnum\Alph
+\let\sectionnumstyle\Alph
 
 \section{The following standing committees are established:}
 
 \setcounter{subsection}{4}
-\let\subsubnum\Roman
+%\let\subsectionnumstyle\Roman
 \subsection{Association of Student Activities}
 The following shall be valid only if they are fully agreed upon by the MIT Graduate Student Council (GSC)
     and the MIT Undergraduate Association (UA), and included in the Bylaws of both groups.

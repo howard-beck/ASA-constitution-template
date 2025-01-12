@@ -70,10 +70,4 @@
 \newcommand{\mailmanlist}[1]{\href{https://mailman.mit.edu:444/mailman/admin/#1}{#1@mit.edu}}
 \newcommand{\mailto}[1]{\href{mailto:#1}{#1}}
 
-\newcommand{\officer}[1]{%
-    %\addcontentsline{toc}{\nextsecdepth}{#1}%
-    \hyperref[officer:#1]{\textbf{#1}}%
-    \label{officer:#1}%
-}
-
 \makeatother
