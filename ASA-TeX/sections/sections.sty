@@ -1,3 +1,7 @@
+\newbool{sectionlinebreak}
+\newbool{headerfullinfo}
+\def\headerfullinfo{margin}
+
 \makearr{sectionnames}
 \makearr{sectionshorts}
 \makearr{sectionlongs}
@@ -38,6 +42,8 @@
 \newcounter{headercounter}
 \setcounter{headercounter}{-1}
 
+\newlength{\sectionheaderheight}
+\newlength{\sectionIDheight}
 
 \NewDocumentCommand{\makesectioning}{ m m m O{} O{1} }{
     % name: 1
@@ -121,35 +127,63 @@
             \phantomsection%
             \@ifundefined{#1style}%
             {%
-                \typeout{undefined style: #1style}
                 \let\@sectionstyling\defaultstyle%
             }%
             {%
                 \expandafter\let\expandafter\@sectionstyling\csname#1style\endcsname
             }%
+            \@ifundefined{#1numstyle}%
+            {%
+                \let\@numstyling\defaultnumstyle%
+            }%
+            {%
+                \expandafter\let\expandafter\@numstyling\csname#1numstyle\endcsname
+            }%
             %
             \stepcounter{headercounter}%
             \sectheadid[@sectheaddestlabel]%
-            \hyperref[\@sectheaddestlabel]{\@sectionstyling{#3 \csname#1numstyle\endcsname{#1}. ##2}}%
+            \settoheight{\sectionheaderheight}{\@sectionstyling{o}}%
+            \hyperref[\@sectheaddestlabel]{\@sectionstyling{#3 \@numstyling{#1}. ##2}}%\afterheadertext%
             \protected@write\SECTIONINFO{}{\string%
-                \declareHeaderAtCount{\theheadercounter}{#1}{\csname#1numstyle\endcsname{#1}}{\thesectiondepth}%
+                \declareHeaderAtCount{\theheadercounter}{#1}{\@numstyling{#1}}{\thesectiondepth}%
             }%
             \edef\@currentlabel{\sectheadfullname{\theheadercounter}}%
             \label{\@sectheaddestlabel}%
             %
-            \reversemarginpar\marginpar[%
-                \begin{spacing}{1}%
-                    \scriptsize \sectheadabbv%
-                \end{spacing}%
-            ]{}%
+            \ifbool{headerfullinfo}%
+            {%
+                \settoheight{\sectionIDheight}{\headerfullinfosidestyle TESTING}%
+                %
+                \ifthenelse{\equal{\headerfullinfoside}{margin}}{%
+                    \reversemarginpar\marginpar[%
+                        \begin{spacing}{1}%    
+                            \headerfullinfosidestyle \sectheadabbv%
+                        \end{spacing}%
+                    ]{}%
+                }%
+                {}%
+                %
+                \ifthenelse{\equal{\headerfullinfoside}{inline}}{%
+                    \quad%
+                    \raisebox%
+                        {\dimexpr (\sectionheaderheight-\sectionIDheight)/2}%
+                        {\headerfullinfosidestyle \sectheadid}%
+                }%
+                {}%
+            }%
+            {}%
             %
-            \par
+            \ifbool{sectionlinebreak}%
+            {%
+                \par%
+            }%
+            {}%
             %
             \IfBooleanTF{##1}%
             {}%
             {%
                 \ifnum\thesectiondepth<\getlen{\ToCDepths}%
-                    \addcontentsline{toc}{\getidx\ToCDepths{\thesectiondepth}}{#3 \csname#1numstyle\endcsname{#1}. ##2}%
+                    \addcontentsline{toc}{\getidx\ToCDepths{\thesectiondepth}}{#3 \@numstyling{#1}. ##2}%
                 \fi%
             }%
         \fi%

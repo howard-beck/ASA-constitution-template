@@ -27,14 +27,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{constitution}[01/07/2024 Association of Student Activities Constitution Template]
+\ProvidesClass{constitution}[01/12/2024 Association of Student Activities Constitution Template]
 
 \LoadClass[12pt]{article}
 
 \makeatletter
 
 \RequirePackage{./ASA-TeX/imports}
-\RequirePackage{./ASA-TeX/config}
 \RequirePackage{./ASA-TeX/redefs}
 \RequirePackage{./ASA-TeX/arrays}
 \RequirePackage{./ASA-TeX/sections/sections}
@@ -57,17 +56,20 @@
     \def\groupname{\@oldgroupname\xspace}
 
     \hypersetup{
-        colorlinks = true,
-        urlcolor = urlred,
-        linkcolor = linkblue,
         pdftitle={\groupname \doctype},
         pdfauthor={\groupname},
-        pdfnewwindow=true,
     }
 }
 
 \newcommand{\moiralist}[1]{\href{https://groups.mit.edu/webmoira/list/#1}{#1@mit.edu}}
 \newcommand{\mailmanlist}[1]{\href{https://mailman.mit.edu:444/mailman/admin/#1}{#1@mit.edu}}
 \newcommand{\mailto}[1]{\href{mailto:#1}{#1}}
+
+\newbool{TRUE}
+\setbool{TRUE}{true}
+\newbool{FALSE}
+\setbool{FALSE}{false}
+
+\RequirePackage{./ASA-TeX/config}
 
 \makeatother

@@ -1,3 +1,5 @@
+\newbool{MakeCompactRefs}
+
 \newcounter{sectheadnameiter}
 \newcounter{dummysectheadcounter}
 \setcounter{dummysectheadcounter}{-1}%
@@ -9,75 +11,79 @@
     % #2: step
     % #3: variable to encode into
     % #4: trim at start?
-    \xdef\returntext{}%
+    \edef\returntext{}%
     \ifnum\getlen{\SectDepthsAtCount}<\the\numexpr1+#2\relax%
         % do nothing
     \else%
-        \xdef\ThisDepth{\getidx\SectDepthsAtCount{#2}}%
-        \xdef\ThisSectToSectType{\expandafter\csname SectToSectTypeAtCount#2\endcsname}%
-        \xdef\ThisSectToSectNum{\expandafter\csname SectToSectNumAtCount#2\endcsname}%
-        \xdef\ThisSectionTotalsHistory{\expandafter\csname @sectionTotalsHistoryAtCount#2\endcsname}%
+        \edef\ThisDepth{\getidx\SectDepthsAtCount{#2}}%
+        \edef\ThisSectToSectType{\expandafter\csname SectToSectTypeAtCount#2\endcsname}%
+        \edef\ThisSectToSectNum{\expandafter\csname SectToSectNumAtCount#2\endcsname}%
+        \edef\ThisSectionTotalsHistory{\expandafter\csname @sectionTotalsHistoryAtCount#2\endcsname}%
         %
-        \xdef\SectTreeAgree{0}%
-        \ifnum#4=1%
-            \xdef\SectTreeAgree{1}%
-        \fi%
+        \edef\SectTreeAgree{0}%
+        \ifbool{#4}%
+        {%
+            \edef\SectTreeAgree{1}%
+        }%
+        {}%
         \setcounter{dummysectheadcounter}{0}%
         %
-        \xdef\@allowNextName{1}%
+        \edef\@allowNextName{1}%
         \forloop{sectheadnameiter}{0}{\value{sectheadnameiter} < \the\numexpr1+\ThisDepth\relax}{%
-            \xdef\numbr{\getidx\ThisSectToSectNum{\thesectheadnameiter}}%
-            \xdef\currentnumbr{\getidx\SectToSectNum{\thesectheadnameiter}}%
+            \edef\numbr{\getidx\ThisSectToSectNum{\thesectheadnameiter}}%
+            \edef\currentnumbr{\getidx\SectToSectNum{\thesectheadnameiter}}%
             %
-            \xdef\secttypeID{\getidx\ThisSectToSectType{\thesectheadnameiter}}%
-            \xdef\indexofsecttype{\getindex{\secttypeID}}%
+            \edef\secttypeID{\getidx\ThisSectToSectType{\thesectheadnameiter}}%
+            \edef\indexofsecttype{\getindex{\secttypeID}}%
             %
             %
-            \ifnum#4=1%
-                \xdef\@thisSectionTotal{\getidx\ThisSectionTotalsHistory{\indexofsecttype}}%
-                \xdef\@currentSectionTotal{\getidx\@sectionTotals{\indexofsecttype}}%
+            \ifbool{#4}%
+            {%
+                \edef\@thisSectionTotal{\getidx\ThisSectionTotalsHistory{\indexofsecttype}}%
+                \edef\@currentSectionTotal{\getidx\@sectionTotals{\indexofsecttype}}%
                 %
                 \ifnum\@thisSectionTotal=\@currentSectionTotal%
                 \else%
-                    \xdef\SectTreeAgree{0}%
+                    \edef\SectTreeAgree{0}%
                 \fi%
-            \fi%
+            }%
+            {}%
             %
             \ifnum\SectTreeAgree=0%
                 \ifnum\thedummysectheadcounter>0%
                     \ifnum#1=1%
                         \ifnum\@allowNextName=1%
-                            \xdef\returntext{\returntext, }%
+                            \edef\returntext{\returntext, }%
                         \fi%
                     \else%
                         \ifnum#1=2%
-                            \xdef\returntext{\returntext\\}%
+                            \edef\returntext{\returntext\\}%
                         \else%
                             \ifnum\@allowNextName=1%
-                                \xdef\returntext{\returntext.}%
+                                \edef\returntext{\returntext.}%
                             \fi%
                         \fi%
                     \fi%
                 \else%
-                    \xdef\returntext{}%
+                    \edef\returntext{}%
                 \fi%
                 %
                 \ifnum\@allowNextName=1%
                     \let\seclist\sectionshorts%
-                    \gdef\secspec{.}%
+                    \def\secspec{.}%
                     \ifnum#1=1%
                         \let\seclist\sectionlongs%
-                        \gdef\secspec{ }%
+                        \def\secspec{ }%
                     \fi%
-                    \xdef\secttypename{\getidx\seclist{\indexofsecttype}}%
-                    \xdef\returntext{\returntext\secttypename\secspec\numbr}%
+                    \edef\secttypename{\getidx\seclist{\indexofsecttype}}%
+                    \edef\returntext{\returntext\secttypename\secspec\numbr}%
                 \else%
-                    \xdef\returntext{\returntext\numbr}%
+                    \edef\returntext{\returntext\numbr}%
                 \fi%
                 %
                 \IfStrEq{\secttypename}{Item}%
                 {%
-                    \xdef\@allowNextName{0}%
+                    \edef\@allowNextName{0}%
                 }%
                 {}%
                 %
@@ -96,13 +102,13 @@
     \setcounter{dummysectheadcounter}{-1}%
 }
 \NewDocumentCommand{\sectheadfullname}{m O{}}{%
-    \sectheadname{1}{#1}[#2][\MakeCompactRefs]%
+    \sectheadname{1}{#1}[#2][MakeCompactRefs]%
 }
 \NewDocumentCommand{\sectheadabbv}{O{}}{%
-    \sectheadname{2}{\theheadercounter}[#1][0]%
+    \sectheadname{2}{\theheadercounter}[#1][FALSE]%
 }
 \NewDocumentCommand{\sectheadid}{O{}}{%
-    \sectheadname{3}{\theheadercounter}[#1][0]%
+    \sectheadname{3}{\theheadercounter}[#1][FALSE]%
 }
 
 
@@ -116,14 +122,14 @@
     % counter within: 4
     %
     \ifnum\@madeSections=0
-        \expandafter\xdef\csname#1index\endcsname{\getlen{\sectionnames}}%
+        \expandafter\edef\csname#1index\endcsname{\getlen{\sectionnames}}%
     \fi
     \addidx\@sectionTotals{0}
     %
     \ifnum\@madeSections=0
-        \gdef\numsectypes{\getlen{\sectionnames}}%
+        \def\numsectypes{\getlen{\sectionnames}}%
     \else
-        \expandafter\gdef\expandafter\numsectypes{\csname#1index\endcsname}
+        \expandafter\def\expandafter\numsectypes{\csname#1index\endcsname}
     \fi
     \@ifundefined{the#1}{
         \newcounter{#1}%
@@ -132,7 +138,7 @@
     }
     \ifnum#4=1
         \ifnum\numsectypes>0%
-            \xdef\lastsecnum{\the\numexpr\numsectypes - 1\relax}%
+            \edef\lastsecnum{\the\numexpr\numsectypes - 1\relax}%
             \counterwithin*{#1}{\getidx\sectionnames{\lastsecnum}}%
         \fi%
     \fi

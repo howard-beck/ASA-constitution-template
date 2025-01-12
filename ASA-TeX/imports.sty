@@ -63,6 +63,14 @@
 %%% hyperlinks
 \definecolor{linkblue}{rgb}{0.0, 0.53, 0.74}
 \definecolor{urlred}{HTML}{FF1423}
+\hypersetup{
+    colorlinks = true,
+    urlcolor = urlred,
+    linkcolor = linkblue,
+    pdfnewwindow = true,
+    breaklinks = true
+}
+% more hypersetup in constitution.cls to include \groupname
 
 %%% itemize and enumerate
 \let\oldalph\alph
@@ -90,3 +98,7 @@
 \fancyhf{}
 \fancyhead[C]{\textsc{\groupname}}
 \fancyfoot[R]{Page \thepage\ of \pageref*{LastPage}}
+
+%%% table of contents
+\renewcommand\cftsecfont{\mdseries}
+\renewcommand\cftsecpagefont{\mdseries}
