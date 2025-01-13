@@ -65,6 +65,16 @@
 \newcommand{\mailmanlist}[1]{\href{https://mailman.mit.edu:444/mailman/admin/#1}{#1@mit.edu}}
 \newcommand{\mailto}[1]{\href{mailto:#1}{#1}}
 
+\definecolor{applegreen}{rgb}{0.55, 0.71, 0.0}
+\usepackage{longtable}
+\newcommand{\changes}[3]{%
+    \textbf{\textcolor{red}{#1}} 
+    \textbf{\textcolor{applegreen}{#2}}%
+    \par%
+    \colorbox{yellow}{\parbox{\textwidth}{\quad \textbf{#3}}}%
+    \par
+}
+
 \newbool{TRUE}
 \setbool{TRUE}{true}
 \newbool{FALSE}
