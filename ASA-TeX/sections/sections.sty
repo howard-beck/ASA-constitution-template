@@ -93,6 +93,7 @@
             %
             \ifnum\lastIndex<\getindex{#1}%
                 \stepcounter{sectiondepth}%
+                \stepcounter{sectiondepth@noitems}%
             \else%
                 \edef\@newdepth{\the\numexpr\thesectiondepth+\getindex{#1}-\lastIndex}%
                 \ifnum\@newdepth<0%
@@ -143,8 +144,7 @@
             \settoheight{\sectionheaderheight}{\@sectionstyling{o}}%
             \csname#1pre\endcsname
             \phantomsection%
-            \hyperref[\@sectheaddestlabel]{\@sectionstyling{#3 \@numstyling{#1}. ##2}}%\afterheadertext%
-            \csname#1post\endcsname
+            \hyperref[\@sectheaddestlabel]{\@sectionstyling{#3 \@numstyling{#1}. ##2}}\afterheadertext%
             \protected@write\SECTIONINFO{}{\string%
                 \declareHeaderAtCount{\theheadercounter}{#1}{\@numstyling{#1}}{\thesectiondepth}%
             }%
@@ -173,6 +173,7 @@
                 {}%
             }%
             {}%
+            \csname#1post\endcsname
             %
             \ifbool{sectionlinebreak}%
             {%
@@ -244,5 +245,6 @@
     \hyperref[officer:#1]{\textbf{\textcolor{defaultcolor}{#1}}}%
     \global\edef\@currentlabel{1}%
     \label{officer:#1}%
+    \phantomsection
     \addcontentsline{toc}{\getidx\ToCDepths{\the\numexpr1+\thesectiondepth@noitems\relax}}{[Officer] #1}%
 }

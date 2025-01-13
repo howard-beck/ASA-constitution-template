@@ -5,6 +5,13 @@
 %     would only show as Section II. A reference to Article III Section 1
 %     would show as Article III Section 1.
 \setbool{MakeCompactRefs}{true}
+%% put appendix letter in appendix article?
+% this solves the following problem: referencing Article II
+%     inside of Appendix A, Article I may refer to
+%     Appendix A, Article II or [Main Text] Article II...
+%     at least when MakeCompactRefs is true
+% setting this to true would reference it as Article A.II
+\setbool{ArticleWithAppendixPrepend}{true}
 
 %% Table of Contents depth
 \setcounter{tocdepth}{5}
@@ -36,11 +43,3 @@
 
 %% max size for margin header info
 \def\maxheaderfullinfosize{3}
-
-%% put appendix letter in appendix article?
-% this solves the following problem: referencing Article II
-%     inside of Appendix A, Article I may refer to
-%     Appendix A, Article II or [Main Text] Article II...
-%     at least when MakeCompactRefs is true
-% setting this to true would reference it as Article A.II
-\setbool{ArticleWithAppendixPrepend}{true}
