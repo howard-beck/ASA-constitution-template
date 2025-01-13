@@ -73,7 +73,10 @@
     \@ifundefined{#1}{
         \let\commandname\NewDocumentCommand
     }{}
-    \typeout{making section command #1 #2 #3}
+    
+    \expandafter\def\csname#1pre \endcsname{}
+    \expandafter\def\csname#1post \endcsname{}
+
     \ExpandArgs{c}\commandname{#1}{s m}{%
         \typeout{#1 section title ##2}
         \ifnum\@makingTOC=1
@@ -116,15 +119,10 @@
             \setidx\@sectionTotals{\csname#1index\endcsname}{\the\numexpr\oldtotal+1\relax}
             %
             \def\spacingamount{\fpeval{1/(2^\TheoDepth)}}%
-            \ifnum\thesectiondepth=0%
-                \vspace{1cm}
-                %\hrule
-            \fi%
             \par%
             \vspace{\spacingamount cm}%
             %
             %%% TEXT HERE
-            \phantomsection%
             \@ifundefined{#1style}%
             {%
                 \let\@sectionstyling\defaultstyle%
@@ -143,7 +141,10 @@
             \stepcounter{headercounter}%
             \sectheadid[@sectheaddestlabel]%
             \settoheight{\sectionheaderheight}{\@sectionstyling{o}}%
+            \csname#1pre\endcsname
+            \phantomsection%
             \hyperref[\@sectheaddestlabel]{\@sectionstyling{#3 \@numstyling{#1}. ##2}}%\afterheadertext%
+            \csname#1post\endcsname
             \protected@write\SECTIONINFO{}{\string%
                 \declareHeaderAtCount{\theheadercounter}{#1}{\@numstyling{#1}}{\thesectiondepth}%
             }%
@@ -239,7 +240,7 @@
 
 
 \newcommand{\officer}[1]{%
-    %\addcontentsline{toc}{\nextsecdepth}{#1}%
+    \colorlet{defaultcolor}{.}
     \hyperref[officer:#1]{\textbf{\textcolor{defaultcolor}{#1}}}%
     \global\edef\@currentlabel{1}%
     \label{officer:#1}%

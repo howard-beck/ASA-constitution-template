@@ -1,4 +1,5 @@
 \newbool{MakeCompactRefs}
+\newbool{ArticleWithAppendixPrepend}
 
 \newcounter{sectheadnameiter}
 \newcounter{dummysectheadcounter}
@@ -29,12 +30,26 @@
         \setcounter{dummysectheadcounter}{0}%
         %
         \edef\@allowNextName{1}%
+        \edef\oldnumbr{-100}%
         \forloop{sectheadnameiter}{0}{\value{sectheadnameiter} < \the\numexpr1+\ThisDepth\relax}{%
+            \let\oldnumbr\numbr
             \edef\numbr{\getidx\ThisSectToSectNum{\thesectheadnameiter}}%
             \edef\currentnumbr{\getidx\SectToSectNum{\thesectheadnameiter}}%
             %
             \edef\secttypeID{\getidx\ThisSectToSectType{\thesectheadnameiter}}%
             \edef\indexofsecttype{\getindex{\secttypeID}}%
+            %
+            \ifthenelse{\equal{\secttypeID}{article}}%
+            {%
+                \ifnum\thesectheadnameiter>0%
+                    \ifbool{ArticleWithAppendixPrepend}%
+                    {%
+                        \edef\numbr{\oldnumbr.\numbr}%
+                    }%
+                    {}%
+                \fi%
+            }%
+            {}%
             %
             %
             \ifbool{#4}%

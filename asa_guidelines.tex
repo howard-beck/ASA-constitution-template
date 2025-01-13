@@ -19,7 +19,6 @@
 \def\doctype{Operating Guidelines}
 %\input{../commands.tex}
 
-\usepackage{xcolor}
 \definecolor{asared}{HTML}{A31F34}
 %\definecolor{asagray}{HTML}{CCC}
 \hypersetup{
@@ -56,6 +55,18 @@
 \renewcommand{\labelenumi}{\Alph{enumi}.}
 \renewcommand{\labelenumii}{\arabic{enumii}.}
 \renewcommand{\labelenumiii}{\roman{enumiii}.}
+
+\def\appendixpre{\newpage}
+\def\articlepre{
+    \ifnum\thesectiondepth>0
+        \ifnum\thearticle>1
+            \hrule
+            \vspace{1cm}
+        \fi
+    \else
+        \newpage
+    \fi%
+}
 
 %%% NOTE: do not remove \xspace
 
@@ -103,7 +114,7 @@ The core membership of an extracurricular activity is the active membership most
     \begin{enumerate}
         \item \ul{Funded student groups} are student groups as defined above that are that are eligible
             for and primarily funded by their respective student government funding boards
-            (
+            (%
                 i.e. groups
                 with majority undergraduate student members are funded by the
                 \href{http://ua.mit.edu/financial-board}{Undergraduate Association's FinBoard}
@@ -166,7 +177,7 @@ It is recommended that all student organizations include additional definitions 
         to participants.
 \end{enumerate}
 
-\newpage
+
 
 \article{Student Group Recognition and Derecognition}
 \label{group_recog_and_derecog}
@@ -208,7 +219,7 @@ The ASA Executive Board may derecognize any activity not meeting its responsibil
 Any group that receives a derecognition notice may appeal the decision to the ASA Executive Board and discuss
     the necessary steps to regain their recognized status based on their individual situation.
 
-\newpage
+
 
 \article{Rights and Responsibilities of Student Groups}
 \label{rights_and_resps}
@@ -402,7 +413,7 @@ Notwithstanding anything to the contrary, such representatives shall be removed 
 They shall not be eligible for any office as defined in \ref{asa_exec_elections}, except as a temporary replacement
     as defined in \ref{asa_exec_vacancies}.
 
-\newpage
+
 
 \article{ASA Judicial Process}
 The ASA Executive Board, as the judicial body of the ASA, shall rule on violations by activities of ASA,
@@ -528,7 +539,7 @@ If an incident involving a student group is reported to the COD and confidential
         the COD or OSC.
 \end{enumerate}
 
-\newpage
+
 
 \article{General Body Meetings}
 
@@ -572,7 +583,7 @@ If an incident involving a student group is reported to the COD and confidential
     \end{enumerate}
 \end{enumerate}
 
-\newpage
+
 
 \article{Office and Storage Space Allocation Policy}
 \label{office_and_storage}
@@ -744,7 +755,7 @@ The Board may revoke a group's room allocation prior to the next declared alloca
     ASA will request these units to notify the occupants.
 \end{enumerate}
 
-\newpage
+
 
 \article{Bulletin Board Allocation Process}
 \label{bulletin_boards}
@@ -791,7 +802,7 @@ Between standard full re-allocations, the ASA will maintain a list of groups tha
 If boards become available, the Board will preferentially allocate boards to those groups that applied in the
     previous full allocation cycle.
 
-\newpage
+
 
 \article{Standing Policies}
 The ASA Executive Board and General Body may pass standing policies.
@@ -801,7 +812,7 @@ Any proposed change to standing policy must be presented one week before the mee
 \article{Amendments}
 These Operating Guidelines may only be modified via the process outlined in the GSC Bylaws (\ref{gsc_bylaws:5iv})
 
-\newpage
+
 
 \appendix{ASA Organization}
 \label{app:asa_org}
@@ -811,7 +822,7 @@ These Operating Guidelines may only be modified via the process outlined in the 
     \includegraphics[width=1\linewidth]{asa/asa_org_chart.png}
 \end{figure}
 
-\newpage
+
 
 \appendix{ASA Recognition Procedures}
 \label{app:B}
@@ -1062,7 +1073,7 @@ A group that appeals after receiving a derecognition notice may be allowed to co
 \article{Amendments}
 This Operating Guidelines Appendix may only be modified via the process outlined in the GSC Bylaws (\ref{gsc_bylaws:5iv}).
 
-\newpage
+
 
 \appendix{GSC Bylaws}
 \label{app:C}
