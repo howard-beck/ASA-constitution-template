@@ -4,6 +4,11 @@
 \newcounter{sectheadnameiter}
 \newcounter{dummysectheadcounter}
 \setcounter{dummysectheadcounter}{-1}%
+
+\def\@FULL@REF{1}
+\def\@SHORT@REF{2}
+\def\@ID@REF{3}
+
 \NewDocumentCommand{\sectheadname}{m m O{} O{0}}{%
     % #1:
     %    1 = full
@@ -12,7 +17,7 @@
     % #2: step
     % #3: variable to encode into
     % #4: trim at start?
-    \edef\returntext{}%
+    \def\returntext{}%
     \ifnum\getlen{\SectDepthsAtCount}<\the\numexpr1+#2\relax%
         % do nothing
     \else%
@@ -29,10 +34,18 @@
         {}%
         \setcounter{dummysectheadcounter}{0}%
         %
-        \edef\@allowNextName{1}%
-        \edef\oldnumbr{-100}%
-        \forloop{sectheadnameiter}{0}{\value{sectheadnameiter} < \the\numexpr1+\ThisDepth\relax}{%
-            \let\oldnumbr\numbr
+        \def\@allowNextName{1}%
+        \def\startnum{0}%
+        \ifnum#1=\@SHORT@REF%
+            % len = 3 ==> this depth = 2
+            % want this depth >= len - 1
+            % or this depth+1 > len-1
+            \ifnum\the\numexpr\ThisDepth+1\relax>\maxheaderfullinfosize%
+                \def\returntext{...\\}%
+                \def\startnum{\the\numexpr1+\ThisDepth-\maxheaderfullinfosize+1\relax}%
+            \fi%
+        \fi%
+        \forloop{sectheadnameiter}{\startnum}{\value{sectheadnameiter} < \the\numexpr1+\ThisDepth\relax}{%
             \edef\numbr{\getidx\ThisSectToSectNum{\thesectheadnameiter}}%
             \edef\currentnumbr{\getidx\SectToSectNum{\thesectheadnameiter}}%
             %
@@ -41,10 +54,11 @@
             %
             \ifthenelse{\equal{\secttypeID}{article}}%
             {%
-                \ifnum\thesectheadnameiter>0%
+                \ifnum\thesectheadnameiter=1%
                     \ifbool{ArticleWithAppendixPrepend}%
                     {%
-                        \edef\numbr{\oldnumbr.\numbr}%
+                        \def\@oldnumbr{\getidx\ThisSectToSectNum{0}}%
+                        \edef\numbr{\@oldnumbr.\numbr}%
                     }%
                     {}%
                 \fi%
@@ -66,12 +80,12 @@
             %
             \ifnum\SectTreeAgree=0%
                 \ifnum\thedummysectheadcounter>0%
-                    \ifnum#1=1%
+                    \ifnum#1=\@FULL@REF%
                         \ifnum\@allowNextName=1%
                             \edef\returntext{\returntext, }%
                         \fi%
                     \else%
-                        \ifnum#1=2%
+                        \ifnum#1=\@SHORT@REF%
                             \edef\returntext{\returntext\\}%
                         \else%
                             \ifnum\@allowNextName=1%
@@ -79,8 +93,6 @@
                             \fi%
                         \fi%
                     \fi%
-                \else%
-                    \edef\returntext{}%
                 \fi%
                 %
                 \ifnum\@allowNextName=1%
@@ -117,13 +129,13 @@
     \setcounter{dummysectheadcounter}{-1}%
 }
 \NewDocumentCommand{\sectheadfullname}{m O{}}{%
-    \sectheadname{1}{#1}[#2][MakeCompactRefs]%
+    \sectheadname{\@FULL@REF}{#1}[#2][MakeCompactRefs]%
 }
 \NewDocumentCommand{\sectheadabbv}{O{}}{%
-    \sectheadname{2}{\theheadercounter}[#1][FALSE]%
+    \sectheadname{\@SHORT@REF}{\theheadercounter}[#1][FALSE]%
 }
 \NewDocumentCommand{\sectheadid}{O{}}{%
-    \sectheadname{3}{\theheadercounter}[#1][FALSE]%
+    \sectheadname{\@ID@REF}{\theheadercounter}[#1][FALSE]%
 }
 
 
