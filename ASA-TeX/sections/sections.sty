@@ -242,9 +242,9 @@
 
 \newcommand{\officer}[1]{%
     \colorlet{defaultcolor}{.}
+    \phantomsection%
     \hyperref[officer:#1]{\textbf{\textcolor{defaultcolor}{#1}}}%
-    \global\edef\@currentlabel{1}%
+    \global\edef\@currentlabel{#1}%
     \label{officer:#1}%
-    \phantomsection
     \addcontentsline{toc}{\getidx\ToCDepths{\the\numexpr1+\thesectiondepth@noitems\relax}}{[Officer] #1}%
 }
