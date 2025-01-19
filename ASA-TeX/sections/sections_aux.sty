@@ -13,7 +13,7 @@
 
     \expandafter\xdef\csname#1index\endcsname{\getlen{\sectionnames}}%
     \addidx\sectionnames{#1}%
-    \gdef\@madeSections{1}
+    \def\@madeSections{1}
 }
 
 \newcommand{\declareHeaderAtCount}[4]{%

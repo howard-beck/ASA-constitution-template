@@ -152,48 +152,109 @@ This constitution, amendments to it, and the by-laws of this organization shall 
 
 
 
-\appendix{TeX help -- Remove me for final version}
+\appendix{ASA-\TeX\  help -- Remove me for final version}
+\gdef\headerfullinfoside{none}
+\def\codeex{\bgroup\catcode`\\=12 \catcode`\ =12 \cmdA}
+\def\cmdA|#1|{%
+    \egroup
+    \par%
+    \fbox[l,boxrule=2pt,lcolor=green]{%
+        \quad \mbox{%
+            \begin{minipage}{\textwidth}
+                {\tt\StrSubstitute{\detokenize{#1}}{!}{\noexpand\noexpand\noexpand\newline}}
+            \end{minipage}
+        }
+    }%
+    \reversemarginpar\marginpar[\headerfullinfosidestyle \textsc{\textbf{Code}}]{}%
+}
+\def\coderunex{\bgroup\catcode`\\=12 \catcode`\ =12 \cmdB}
+\def\cmdB|#1|{%
+    \egroup
+    \par%
+    \fbox[l,boxrule=2pt,lcolor=green]{%
+        \quad \mbox{%
+            \begin{minipage}{\textwidth}
+                {\tt\StrSubstitute{\detokenize{#1}}{!}{\noexpand\noexpand\noexpand\newline}}
+            \end{minipage}
+        }
+    }%
+    \reversemarginpar\marginpar[\headerfullinfosidestyle \textsc{\textbf{Code}}]{}%
+
+    \outputex{\scantokens{#1}}
+}
+\def\extrathings{}
+\newcommand\outputex[1]{%
+    \par%
+    \let\oldmarginpar\marginpar
+    \def\marginstr{}
+    \renewcommand\marginpar[2][]{\typeout{margin ##1 ##2}\gdef\marginstr{##1}}
+
+    \begingroup
+        \catcode`\!=\active
+        \lccode`\~=`!%
+        \lowercase{%
+            \def~{}
+        }
+    
+        \fbox[l,boxrule=2pt,lcolor=blue]{%
+            \quad \begin{minipage}{\dimexpr\textwidth-20pt}
+                \extrathings #1
+            \end{minipage}
+        }%
+    \endgroup
+
+    \let\marginpar\oldmarginpar
+    \reversemarginpar\marginpar[\headerfullinfosidestyle \textsc{\textbf{Output}} \bgroup \extrathings \marginstr \egroup]{}
+    \par%
+    %
+
+    \def\extrathings{}
+}
+
+\def\cmdex{\bgroup\catcode`\\=12 \catcode`\ =12 \cmdC}
+\def\cmdC#1{\egroup{\textcolor{blue}{\textbf{\texttt{\detokenize{#1}}}}}}
+
 \article{Compiling issues}
 Please note: you may need to compile the document up to $ 4 $ times after adding a new
 section (or article, subsection, etc).
 This is in order for the document to update its internal catalog of all the section references.
+If an error persists after compiling $ 4 $ times, then it is a bug either in your code or in ASA-\TeX.
 \\\\
-Additionally, if you do not define \verb|\groupname|, the program will throw an error.
-\verb|\groupname| is a macro used to store your group name, to put in the title, in the PDF metadata, and in the page headings.
-To define it, use\par
-\quad \verb|\def\groupname{Association of Student Activities}|\par
+Additionally, if you do not define \cmdex{\groupname}, the program will throw an error.
+\cmdex{\groupname} is a macro used to store your group name, to put in the title, in the PDF metadata, and in the page headings.
+To define it, use
+\codeex|\def\groupname{Association of Student Activities}|
 where you should instead put your group name.
 
 \article{Useful commands}
 The following commands are defined for your convenience.
 \\\\
-To type a WebMoira mailing list, you can use \verb|\moiralist|.
-For example:\par
-    \quad \verb|\moiralist{asa-exec}|\par
-displays as \moiralist{asa-exec}, which also links to the WebMoira site to join the list.
-The same goes for: \par
-    \quad \verb|\mailmanlist{asa-exec}|\par
-which displays as \mailmanlist{asa-exec} and links to the mailman site (although note that the corresponding mailman website does not exist, in this case).
+To type a WebMoira mailing list, you can use \cmdex{\moiralist}.
+\coderunex|\moiralist{asa-exec}|
+Notice that it also links to the WebMoira site to join the list.
+The same goes for \cmdex{\mailmanlist}:
+\coderunex|\mailmanlist{asa-exec}|
+(although note that the corresponding mailman website does not exist, in this case).
 \\\\
-If you want to link to a mailing list without letting the reader add themselves to the list, you can use\par
-\quad \verb|\mailto{asa-exec@mit.edu}|\par
-which displays as \mailto{asa-exec@mit.edu} and links to the \verb|mailto:| site correctly.
-That is, by clicking on the link you are redirected to an email provider to send an email to the list.
+If you want to link to a mailing list without letting the reader add themselves to the list, you can
+    use \cmdex{\mailto} such as:
+\coderunex|\mailto{asa-exec@mit.edu}|
+Notice that it links to the \verb|mailto:| site correctly -- that is, by clicking on the link you are redirected to an email provider to send an email to the list.
 \\\\
 Additionally, you may wish to put officer definitions in the table of contents (and navigation sidebar) while they may not deserve their own (sub...)section.
-For this purpose, there is a \verb|\officer| command.
-For example,\par
-\quad \verb|The \officer{Vice President} is important|\par
-displays as\par
-\quad The \officer{Vice President} is important.\par
+For this purpose, there is a \cmdex{\officer} command:
+\coderunex|The \officer{Vice President} is important|
 You can check the table of contents or navigation bar to see that it says [Officer] President.
 It is put at the next depth after the previous section header.
-\\\\
+Notice that you can click \verb|Vice President|, which links you to its position in the document.
+You can also reference its definition later in the text, such as:
+\coderunex|The \ref{officer:Vice President} is also responsible for...|
 While this constitution template is mainly to be used for constitutions, you may use it for any sort of club documentation you see fit.
-For this purpose, there is a \verb|\doctype| command.
+For this purpose, there is a \cmdex{\doctype} command.
 It is used in the title, and in the PDF's metadata.
-To change it, write, somewhere in the preamble,\par
-\quad \verb|\def\doctype{Your Document Type Here}| (default is Constitution)
+To change it, write, somewhere in the preamble:
+\codeex|\def\doctype{Your Document Type Here}|
+The default value is \verb|Constitution|.
 
 \article{Section headers}
 \label{headers}
@@ -201,144 +262,128 @@ To change it, write, somewhere in the preamble,\par
 \section{Section header list}
 The constitution template naturally supports the following section header types:
 \begin{enumerate}
-    \item \verb|\appendix|
-    \item \verb|\article|
-    \item \verb|\section|
-    \item \verb|\subsection|
-    \item \verb|\subsubsection|
+    \item \cmdex{\appendix}
+    \item \cmdex{\article}
+    \item \cmdex{\section}
+    \item \cmdex{\subsection}
+    \item \cmdex{\subsubsection}
 \end{enumerate}
-They are indented in precisely that order, and are used exactly like the standard TeX \verb|\section| command.
-If you for some reason need to go deeper than that, you should use \verb|\makeNsubsection{3}| or some other number -- in the preamble.
-This will define, for example, the command \verb|\subsubsubsection|.
+They are indented in precisely that order, and are used exactly like the standard TeX \cmdex{\section} command.
+If you for some reason need to go deeper than that, you should use \cmdex{\makeNsubsection{3}} or some other number -- in the preamble.
+This will define, for example, the command \cmdex{\subsubsubsection}.
+\par
+
+Note that \cmdex{\section*} and its variants still exist.
+%\codeex[\subsection*{Command subsection with star}]
+\coderunex|\subsection*{Command subsection with star}|
+
+If you want a numbered section to not show up in the table of contents or navigation sidebar,
+    you can put \verb|[0]| at the end.
 
 \subsection{Custom section headers}
-For a custom section header command, please use\par
-\quad \verb|\makesectioning{sectioncommand}{ABBV}{Sectionname}|\par
-For example, \verb|\section| is defined using\par
-\quad \verb|\makesectioning{section}{SEC}{Section}|
+For a custom section header command, use \cmdex{\makesectioning} as in the following example:
+\codeex|\makesectioning{sectioncommand}{ABBV}{Sectionname}|
+For example, \cmdex{\section} is defined using
+\codeex|\makesectioning{section}{SEC}{Section}|
 
 \section{Styling}
 \subsection{Section header font}
 You can modify the font sizes and styles.
-In the template, they are defined as follows:\par
-\quad \verb|\def\appendixstyle{\normalfont\Large\bfseries\scshape}|\par
-\quad \verb|\def\articlestyle{\normalfont\Large\bfseries\scshape\underline}|\par
-\quad \verb|\def\sectionstyle{\normalfont\large\bfseries\scshape}|\par
-\quad \verb|\def\defaultstyle{\normalfont\normalsize\bfseries\scshape}|\par
+In the template, they are defined as follows:
+\codeex|\def\appendixstyle{\normalfont\Large\bfseries\scshape}
+\def\articlestyle{\normalfont\Large\bfseries\scshape\underline}
+\def\sectionstyle{\normalfont\large\bfseries\scshape}
+\def\defaultstyle{\normalfont\normalsize\bfseries\scshape}|
 Any style not defined will use the \verb|defaultstyle|.
 \\\\
 You can use similar commands at any point throughout the document.
 To apply your changes to the entire document, put the customizations in the preamble.
 For example, at this point, we can change what the next subsubsection will look like.
-This code will make it be {\Huge Huge} font in \textsc{SmallCaps}:\par
-\quad \verb|\def\subsubsectionstyle{\normalfont\Huge\scshape}|\par
-\def\subsubsectionstyle{\normalfont\Huge\scshape}
-\subsubsection{As is demonstrated here}
-\let\subsubsectionstyle\defaultstyle
+This code will make it be {\Huge Huge} font in \textsc{SmallCaps}.
+\coderunex|\def\subsubsectionstyle{\normalfont\Huge\scshape}!
+\subsubsection{As is demonstrated here}|
+
 You can learn more about font families and styling \href{https://www.overleaf.com/learn/latex/Font_sizes%2C_families%2C_and_styles}{here}.
 
 \subsection{Section numbering}
-The default numbering system is given by:\par
-\quad \verb|\let\appendixnumstyle\Alph|\par
-\quad \verb|\let\articlenumstyle\Roman|\par
-\quad \verb|\let\sectionnumstyle\arabic|\par
-\quad \verb|\let\defaultnumstyle\arabic|\par
+The default numbering system is given by:
+\codeex|\let\appendixnumstyle\Alph!
+\let\articlenumstyle\Roman!
+\let\sectionnumstyle\arabic!
+\let\defaultnumstyle\arabic|
 That is -- appendices are indexed by capital alphabetic letters (A, B, ...), articles by capital roman numerals (i, ii, ...), sections by arabic numerals (1, 2, ...).
 If a style is not specified, the default of arabic is used.
 \\\\
-As an example, a \verb|\subsubsectionnumstyle| is not specified, so that the next subsubsection will use arabic numerals
-\subsubsection{like so}
+As an example, \cmdex{\subsubsectionnumstyle} is not specified, so that the next subsubsection will use arabic numerals
+\coderunex|\subsubsection{like so}[0]|
 However, we can use Roman for subsubsections if we so choose:
-\quad \verb|\let\subsubsectionnumstyle\Roman|\par
-\let\subsubsectionnumstyle\Roman
-\subsubsection{resulting in this}
-\let\subsubsectionnumstyle\defaultnumstyle
+\coderunex|\let\subsubsectionnumstyle\Roman!
+\subsubsection{resulting in this}[0]|
 
 \subsection{Line breaks and suffix}
 Some clubs may prefer to keep their section headers inline.
-In this case, they may set, in the preamble\par
-\quad \verb|\setbool{sectionlinebreak}{false}|\par
-\setbool{sectionlinebreak}{false}
-\subsubsection{which will look like this}
-Where future text stays inline.
+In this case, they may set, in the preamble:
+\coderunex|\setbool{sectionlinebreak}{false}!
+\subsubsection{which will look like this}[0]!
+Where future text stays inline.|
 However, the separation between the section header and the text can look awkward, so you can put a suffix using\par
-\quad \verb|\def\afterheadertext{.}|
-\def\afterheadertext{.}
-\subsubsection{resulting in this}
-Where future text is now separated by a ``\verb|.|", for example.
-\setbool{sectionlinebreak}{true}
-\def\afterheadertext{}
+\coderunex|\setbool{sectionlinebreak}{false}!
+\def\afterheadertext{.}!
+\subsubsection{resulting in this}[0]!
+Where future text is now separated by a ``.", for example.|
 
-\def\maxheaderfullinfosize{3}
 \section{Section header labels}
 To keep track of which article/etc you are in, there are, by default, labels on the left margin.
-To instead put them to the right of the section header, you can declare:\par
-\quad \verb|\def\headerfullinfoside{inline}|\par
-which will
-\def\headerfullinfoside{inline}
-\subsection{look like this}
-Or, to disable it altogether, you can write\par
-\quad \verb|\def\headerfullinfoside{none}|\par
-\def\headerfullinfoside{none}
-\subsubsection{to get this}
-The default value is \verb|margin|.
+To instead put them to the right of the section header, you can declare:
+\coderunex|\def\headerfullinfoside{inline}!
+\subsection{which looks like this}[0]|
+Or, to disable it altogether, you can write:
+\coderunex|\def\headerfullinfoside{none}!
+\subsubsection{to get this}[0]|
+The default value is \verb|margin|:
+\coderunex|\def\headerfullinfoside{margin}!
+\subsubsection{default behavior}[0]|
 When it is in the margin, you may limit the amount of data, so that the margin notes do not collide.
 The default maximum depth is \verb|3|, but you can expand it.
-For example, going up to \verb|10| will likely guarantee you capture all information:\par
-\quad \verb|\def\maxheaderfullinfosize{10}|
-\def\maxheaderfullinfosize{10}
-\def\headerfullinfoside{margin}
-\subsubsection{like so}
-\def\maxheaderfullinfosize{3}
+For example, going up to \verb|10| will likely guarantee you capture all information.
+That will look as follows -- however, note that vertical space was inserted here that is not done automatically.
+Collisions will usually occur at a depth of $ \ge 4 $.
+\def\extrathings{\def\headerfullinfoside{margin}\def\maxheaderfullinfosize{10}}%
+\coderunex|\def\maxheaderfullinfosize{10}!
+\subsubsection{like so}[0]|
 \vspace{1.5cm}
-
-\subsection{Appendix Number Collisions}
-See \ref{number:col}
 
 \subsection{Further styling}
 You may have more stylistic preferences not captured here.
 There are commands that are run before and after every section header, which you can redefine as you wish.
-For example, to put a horizontal line with some extra spacing above and below every subsubsection, you can use\par
-\quad \verb|\def\subsubsectionpre{\hrule\vspace{1cm}}|\par
-\quad \verb|\def\subsubsectionpost{\vspace{1cm}\hrule}|\par
-\def\subsubsectionpre{\hrule\vspace{1cm}}
-\def\subsubsectionpost{\vspace{1cm}\hrule}
-\subsubsection{which looks like this}
-\def\subsubsectionpre{}
-\def\subsubsectionpost{}
+For example, to put a horizontal line with some extra spacing above and below every subsubsection, you can use
+\coderunex|\def\subsubsectionpre{\hrule\vspace{1cm}}!
+\def\subsubsectionpost{\vspace{1cm}\hrule}!
+\subsubsection{which looks like this}[0]|
 
 \article{Referencing}
-\label{number:col}
-To refer to another section, you should use the standard \verb|\label|-\verb|\ref| system from LaTeX.
+To refer to another section, you should use the standard \cmdex{\label}-\cmdex{\ref} system from LaTeX.
 The labels have been redefined so as to not just output a number, but the section header name.
-For example, to learn about typing section headers, you should go to \ref{headers}.
-This was generated with the code:\par
-\quad \verb|\article{Section headers}|\par
-\quad \verb|\label{headers}|\par
-\quad \verb|...|\par
-\quad \verb|For example, to learn about typing section headers, you should go to \ref{headers}.|\par
+\coderunex|Here is a reference to \ref{testing}!
+\section{Testing}!
+\label{testing}|
 
 \section{Compact References}
 By default, the references are \textit{compact}, meaning that, for example, text in Article II, Section 3 referencing Article II, Section 5, will only display ``Section 5" in a reference to Article II, Section 5.
-If you want to fully expand out references, you can set:\par
-\quad \verb|\setbool{MakeCompactRefs}{false}|\par
-\setbool{MakeCompactRefs}{false}
-For example, using this, you would learn about section headings at \ref{headers}
-instead of at just
-\setbool{MakeCompactRefs}{true}%
-\ref{headers}.
-\\\\
+If you want to fully expand out references, you can set:
+\coderunex|\setbool{MakeCompactRefs}{false}!
+You would learn about section headings at \ref{headers} instead of at just!
+\setbool{MakeCompactRefs}{true}!
+\ref{headers}|
 The issue with compact references is that referencing Article II from Appendix A, Article III, for example, is ambiguous.
 It could be [Main Text] Article II or Appendix A, Article II.
 For this reason, article numbers in appendices are prefixed with the appendix number by default.
-This can be disabled as follows:\par
-\quad \verb|\setbool{ArticleWithAppendixPrepend}{false}|\par
-\setbool{ArticleWithAppendixPrepend}{false}
-Then, a (full) reference would look like
-\setbool{MakeCompactRefs}{false}%
-\ref{headers} as opposed to
-\setbool{ArticleWithAppendixPrepend}{true}%
-\ref{headers}.
-\setbool{MakeCompactRefs}{true}
+This can be disabled as follows:
+\coderunex|\setbool{ArticleWithAppendixPrepend}{false}!
+Then, a reference would look like!
+\ref{headers}!
+as opposed to!
+\setbool{ArticleWithAppendixPrepend}{true}!
+\ref{headers}|
 
 \end{document}

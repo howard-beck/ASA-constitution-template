@@ -54,7 +54,7 @@
             %
             \ifthenelse{\equal{\secttypeID}{article}}%
             {%
-                \ifnum\thesectheadnameiter=1%
+                \ifnum\theappendix>0%
                     \ifbool{ArticleWithAppendixPrepend}%
                     {%
                         \def\@oldnumbr{\getidx\ThisSectToSectNum{0}}%
